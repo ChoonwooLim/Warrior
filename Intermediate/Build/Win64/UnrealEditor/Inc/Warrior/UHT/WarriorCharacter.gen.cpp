@@ -17,6 +17,7 @@ void EmptyLinkFunctionForGeneratedCodeWarriorCharacter() {}
 	UPackage* Z_Construct_UPackage__Script_Warrior();
 	WARRIOR_API UClass* Z_Construct_UClass_AWarriorCharacter();
 	WARRIOR_API UClass* Z_Construct_UClass_AWarriorCharacter_NoRegister();
+	WARRIOR_API UClass* Z_Construct_UClass_UCustomMovementComponent_NoRegister();
 // End Cross Module References
 	void AWarriorCharacter::StaticRegisterNativesAWarriorCharacter()
 	{
@@ -40,6 +41,10 @@ void EmptyLinkFunctionForGeneratedCodeWarriorCharacter() {}
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_FollowCamera_MetaData[];
 #endif
 		static const UECodeGen_Private::FObjectPropertyParams NewProp_FollowCamera;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_CustomMovementComponent_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_CustomMovementComponent;
 #if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_DefaultMappingContext_MetaData[];
 #endif
@@ -74,6 +79,7 @@ void EmptyLinkFunctionForGeneratedCodeWarriorCharacter() {}
 		{ "HideCategories", "Navigation" },
 		{ "IncludePath", "WarriorCharacter.h" },
 		{ "ModuleRelativePath", "WarriorCharacter.h" },
+		{ "ObjectInitializerConstructorDeclared", "" },
 	};
 #endif
 #if WITH_METADATA
@@ -106,6 +112,15 @@ void EmptyLinkFunctionForGeneratedCodeWarriorCharacter() {}
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_AWarriorCharacter_Statics::NewProp_FollowCamera = { "FollowCamera", nullptr, (EPropertyFlags)0x00400000000a001d, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(AWarriorCharacter, FollowCamera), Z_Construct_UClass_UCameraComponent_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UClass_AWarriorCharacter_Statics::NewProp_FollowCamera_MetaData), Z_Construct_UClass_AWarriorCharacter_Statics::NewProp_FollowCamera_MetaData) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AWarriorCharacter_Statics::NewProp_CustomMovementComponent_MetaData[] = {
+		{ "AllowPrivateAccess", "true" },
+		{ "Category", "Movement" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "WarriorCharacter.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_AWarriorCharacter_Statics::NewProp_CustomMovementComponent = { "CustomMovementComponent", nullptr, (EPropertyFlags)0x00400000000a001d, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(AWarriorCharacter, CustomMovementComponent), Z_Construct_UClass_UCustomMovementComponent_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UClass_AWarriorCharacter_Statics::NewProp_CustomMovementComponent_MetaData), Z_Construct_UClass_AWarriorCharacter_Statics::NewProp_CustomMovementComponent_MetaData) };
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AWarriorCharacter_Statics::NewProp_DefaultMappingContext_MetaData[] = {
 		{ "AllowPrivateAccess", "true" },
@@ -173,6 +188,7 @@ void EmptyLinkFunctionForGeneratedCodeWarriorCharacter() {}
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_AWarriorCharacter_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AWarriorCharacter_Statics::NewProp_CameraBoom,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AWarriorCharacter_Statics::NewProp_FollowCamera,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AWarriorCharacter_Statics::NewProp_CustomMovementComponent,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AWarriorCharacter_Statics::NewProp_DefaultMappingContext,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AWarriorCharacter_Statics::NewProp_JumpAction,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AWarriorCharacter_Statics::NewProp_MoveAction,
@@ -217,9 +233,9 @@ void EmptyLinkFunctionForGeneratedCodeWarriorCharacter() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_WarriorCharacter_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_AWarriorCharacter, AWarriorCharacter::StaticClass, TEXT("AWarriorCharacter"), &Z_Registration_Info_UClass_AWarriorCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AWarriorCharacter), 757888572U) },
+		{ Z_Construct_UClass_AWarriorCharacter, AWarriorCharacter::StaticClass, TEXT("AWarriorCharacter"), &Z_Registration_Info_UClass_AWarriorCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AWarriorCharacter), 1206975282U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_WarriorCharacter_h_2842758245(TEXT("/Script/Warrior"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_WarriorCharacter_h_4039367093(TEXT("/Script/Warrior"),
 		Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_WarriorCharacter_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_WarriorCharacter_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);
