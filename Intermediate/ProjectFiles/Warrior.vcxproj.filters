@@ -59,5 +59,23 @@
     <ClInclude Include="..\..\Source\Warrior\WarriorGameMode.h">
       <Filter>Source\Warrior</Filter>
     </ClInclude>
+    <Filter Include="Source\Warrior\Private">
+      <UniqueIdentifier>{E6681345-5F17-340B-AEDF-C61B082F26C6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Warrior\Private\Components">
+      <UniqueIdentifier>{7860EA81-1BA3-3C15-BA53-63E72BD87C24}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\Warrior\Private\Components\CustomMovementComponent.cpp">
+      <Filter>Source\Warrior\Private\Components</Filter>
+    </ClCompile>
+    <Filter Include="Source\Warrior\Public">
+      <UniqueIdentifier>{BCFCC6DC-7E76-37B0-98D2-C6FE729328D4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Warrior\Public\Components">
+      <UniqueIdentifier>{F7335DF7-0CC5-3298-8D2F-6B78AE00574F}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Source\Warrior\Public\Components\CustomMovementComponent.h">
+      <Filter>Source\Warrior\Public\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
