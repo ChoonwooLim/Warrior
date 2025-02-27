@@ -109,11 +109,15 @@
     <None Include="..\..\Warrior.uproject"/>
     <None Include="..\..\Source\Warrior.Target.cs"/>
     <None Include="..\..\Source\WarriorEditor.Target.cs"/>
+    <None Include="..\..\.gitattributes"/>
+    <None Include="..\..\.gitignore"/>
+    <None Include="..\..\.vsconfig"/>
     <None Include="..\..\Config\DefaultEditor.ini"/>
     <None Include="..\..\Config\DefaultEditorPerProjectUserSettings.ini"/>
     <None Include="..\..\Config\DefaultEngine.ini"/>
     <None Include="..\..\Config\DefaultGame.ini"/>
     <None Include="..\..\Config\DefaultInput.ini"/>
+    <ClInclude Include="..\..\Source\Warrior\DebugHelper.h"/>
     <None Include="..\..\Source\Warrior\Warrior.Build.cs"/>
     <ClCompile Include="..\..\Source\Warrior\Warrior.cpp">
       <AdditionalIncludeDirectories>$(ClCompile_AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

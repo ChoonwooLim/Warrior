@@ -14,12 +14,12 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 #endif
 #define WARRIOR_WarriorCharacter_generated_h
 
-#define FID_Warrior_Source_Warrior_WarriorCharacter_h_21_SPARSE_DATA
-#define FID_Warrior_Source_Warrior_WarriorCharacter_h_21_SPARSE_DATA_PROPERTY_ACCESSORS
-#define FID_Warrior_Source_Warrior_WarriorCharacter_h_21_EDITOR_ONLY_SPARSE_DATA_PROPERTY_ACCESSORS
-#define FID_Warrior_Source_Warrior_WarriorCharacter_h_21_RPC_WRAPPERS_NO_PURE_DECLS
-#define FID_Warrior_Source_Warrior_WarriorCharacter_h_21_ACCESSORS
-#define FID_Warrior_Source_Warrior_WarriorCharacter_h_21_INCLASS_NO_PURE_DECLS \
+#define FID_02_Warrior_Source_Warrior_WarriorCharacter_h_21_SPARSE_DATA
+#define FID_02_Warrior_Source_Warrior_WarriorCharacter_h_21_SPARSE_DATA_PROPERTY_ACCESSORS
+#define FID_02_Warrior_Source_Warrior_WarriorCharacter_h_21_EDITOR_ONLY_SPARSE_DATA_PROPERTY_ACCESSORS
+#define FID_02_Warrior_Source_Warrior_WarriorCharacter_h_21_RPC_WRAPPERS_NO_PURE_DECLS
+#define FID_02_Warrior_Source_Warrior_WarriorCharacter_h_21_ACCESSORS
+#define FID_02_Warrior_Source_Warrior_WarriorCharacter_h_21_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesAWarriorCharacter(); \
 	friend struct Z_Construct_UClass_AWarriorCharacter_Statics; \
@@ -28,7 +28,7 @@ public: \
 	DECLARE_SERIALIZER(AWarriorCharacter)
 
 
-#define FID_Warrior_Source_Warrior_WarriorCharacter_h_21_ENHANCED_CONSTRUCTORS \
+#define FID_02_Warrior_Source_Warrior_WarriorCharacter_h_21_ENHANCED_CONSTRUCTORS \
 private: \
 	/** Private move- and copy-constructors, should never be used */ \
 	NO_API AWarriorCharacter(AWarriorCharacter&&); \
@@ -40,17 +40,17 @@ public: \
 	NO_API virtual ~AWarriorCharacter();
 
 
-#define FID_Warrior_Source_Warrior_WarriorCharacter_h_18_PROLOG
-#define FID_Warrior_Source_Warrior_WarriorCharacter_h_21_GENERATED_BODY \
+#define FID_02_Warrior_Source_Warrior_WarriorCharacter_h_18_PROLOG
+#define FID_02_Warrior_Source_Warrior_WarriorCharacter_h_21_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_Warrior_Source_Warrior_WarriorCharacter_h_21_SPARSE_DATA \
-	FID_Warrior_Source_Warrior_WarriorCharacter_h_21_SPARSE_DATA_PROPERTY_ACCESSORS \
-	FID_Warrior_Source_Warrior_WarriorCharacter_h_21_EDITOR_ONLY_SPARSE_DATA_PROPERTY_ACCESSORS \
-	FID_Warrior_Source_Warrior_WarriorCharacter_h_21_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_Warrior_Source_Warrior_WarriorCharacter_h_21_ACCESSORS \
-	FID_Warrior_Source_Warrior_WarriorCharacter_h_21_INCLASS_NO_PURE_DECLS \
-	FID_Warrior_Source_Warrior_WarriorCharacter_h_21_ENHANCED_CONSTRUCTORS \
+	FID_02_Warrior_Source_Warrior_WarriorCharacter_h_21_SPARSE_DATA \
+	FID_02_Warrior_Source_Warrior_WarriorCharacter_h_21_SPARSE_DATA_PROPERTY_ACCESSORS \
+	FID_02_Warrior_Source_Warrior_WarriorCharacter_h_21_EDITOR_ONLY_SPARSE_DATA_PROPERTY_ACCESSORS \
+	FID_02_Warrior_Source_Warrior_WarriorCharacter_h_21_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_02_Warrior_Source_Warrior_WarriorCharacter_h_21_ACCESSORS \
+	FID_02_Warrior_Source_Warrior_WarriorCharacter_h_21_INCLASS_NO_PURE_DECLS \
+	FID_02_Warrior_Source_Warrior_WarriorCharacter_h_21_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
@@ -58,7 +58,7 @@ PRAGMA_ENABLE_DEPRECATION_WARNINGS
 template<> WARRIOR_API UClass* StaticClass<class AWarriorCharacter>();
 
 #undef CURRENT_FILE_ID
-#define CURRENT_FILE_ID FID_Warrior_Source_Warrior_WarriorCharacter_h
+#define CURRENT_FILE_ID FID_02_Warrior_Source_Warrior_WarriorCharacter_h
 
 
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

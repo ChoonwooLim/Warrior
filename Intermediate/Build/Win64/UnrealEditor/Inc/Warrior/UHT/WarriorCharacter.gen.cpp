@@ -199,15 +199,15 @@ void EmptyLinkFunctionForGeneratedCodeWarriorCharacter() {}
 	}
 	DEFINE_VTABLE_PTR_HELPER_CTOR(AWarriorCharacter);
 	AWarriorCharacter::~AWarriorCharacter() {}
-	struct Z_CompiledInDeferFile_FID_Warrior_Source_Warrior_WarriorCharacter_h_Statics
+	struct Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_WarriorCharacter_h_Statics
 	{
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
-	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Warrior_Source_Warrior_WarriorCharacter_h_Statics::ClassInfo[] = {
+	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_WarriorCharacter_h_Statics::ClassInfo[] = {
 		{ Z_Construct_UClass_AWarriorCharacter, AWarriorCharacter::StaticClass, TEXT("AWarriorCharacter"), &Z_Registration_Info_UClass_AWarriorCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AWarriorCharacter), 1707875623U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Warrior_Source_Warrior_WarriorCharacter_h_2243641765(TEXT("/Script/Warrior"),
-		Z_CompiledInDeferFile_FID_Warrior_Source_Warrior_WarriorCharacter_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Warrior_Source_Warrior_WarriorCharacter_h_Statics::ClassInfo),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_WarriorCharacter_h_2243641765(TEXT("/Script/Warrior"),
+		Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_WarriorCharacter_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_WarriorCharacter_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

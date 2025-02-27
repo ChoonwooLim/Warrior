@@ -1,8 +1,8 @@
 {
 	"SourceFiles": [
-		"I:\\000_UnrealWork\\Warrior\\Source\\Warrior\\Warrior.Build.cs",
-		"I:\\000_UnrealWork\\Warrior\\Source\\Warrior.Target.cs",
-		"I:\\000_UnrealWork\\Warrior\\Source\\WarriorEditor.Target.cs"
+		"I:\\000_UnrealWork\\02_Warrior\\Source\\Warrior\\Warrior.Build.cs",
+		"I:\\000_UnrealWork\\02_Warrior\\Source\\Warrior.Target.cs",
+		"I:\\000_UnrealWork\\02_Warrior\\Source\\WarriorEditor.Target.cs"
 	],
 	"EngineVersion": "5.3.2"
 }

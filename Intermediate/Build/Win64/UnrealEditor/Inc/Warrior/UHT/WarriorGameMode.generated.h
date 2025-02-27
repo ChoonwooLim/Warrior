@@ -14,12 +14,12 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 #endif
 #define WARRIOR_WarriorGameMode_generated_h
 
-#define FID_Warrior_Source_Warrior_WarriorGameMode_h_12_SPARSE_DATA
-#define FID_Warrior_Source_Warrior_WarriorGameMode_h_12_SPARSE_DATA_PROPERTY_ACCESSORS
-#define FID_Warrior_Source_Warrior_WarriorGameMode_h_12_EDITOR_ONLY_SPARSE_DATA_PROPERTY_ACCESSORS
-#define FID_Warrior_Source_Warrior_WarriorGameMode_h_12_RPC_WRAPPERS_NO_PURE_DECLS
-#define FID_Warrior_Source_Warrior_WarriorGameMode_h_12_ACCESSORS
-#define FID_Warrior_Source_Warrior_WarriorGameMode_h_12_INCLASS_NO_PURE_DECLS \
+#define FID_02_Warrior_Source_Warrior_WarriorGameMode_h_12_SPARSE_DATA
+#define FID_02_Warrior_Source_Warrior_WarriorGameMode_h_12_SPARSE_DATA_PROPERTY_ACCESSORS
+#define FID_02_Warrior_Source_Warrior_WarriorGameMode_h_12_EDITOR_ONLY_SPARSE_DATA_PROPERTY_ACCESSORS
+#define FID_02_Warrior_Source_Warrior_WarriorGameMode_h_12_RPC_WRAPPERS_NO_PURE_DECLS
+#define FID_02_Warrior_Source_Warrior_WarriorGameMode_h_12_ACCESSORS
+#define FID_02_Warrior_Source_Warrior_WarriorGameMode_h_12_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesAWarriorGameMode(); \
 	friend struct Z_Construct_UClass_AWarriorGameMode_Statics; \
@@ -28,7 +28,7 @@ public: \
 	DECLARE_SERIALIZER(AWarriorGameMode)
 
 
-#define FID_Warrior_Source_Warrior_WarriorGameMode_h_12_ENHANCED_CONSTRUCTORS \
+#define FID_02_Warrior_Source_Warrior_WarriorGameMode_h_12_ENHANCED_CONSTRUCTORS \
 private: \
 	/** Private move- and copy-constructors, should never be used */ \
 	WARRIOR_API AWarriorGameMode(AWarriorGameMode&&); \
@@ -40,17 +40,17 @@ public: \
 	WARRIOR_API virtual ~AWarriorGameMode();
 
 
-#define FID_Warrior_Source_Warrior_WarriorGameMode_h_9_PROLOG
-#define FID_Warrior_Source_Warrior_WarriorGameMode_h_12_GENERATED_BODY \
+#define FID_02_Warrior_Source_Warrior_WarriorGameMode_h_9_PROLOG
+#define FID_02_Warrior_Source_Warrior_WarriorGameMode_h_12_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_Warrior_Source_Warrior_WarriorGameMode_h_12_SPARSE_DATA \
-	FID_Warrior_Source_Warrior_WarriorGameMode_h_12_SPARSE_DATA_PROPERTY_ACCESSORS \
-	FID_Warrior_Source_Warrior_WarriorGameMode_h_12_EDITOR_ONLY_SPARSE_DATA_PROPERTY_ACCESSORS \
-	FID_Warrior_Source_Warrior_WarriorGameMode_h_12_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_Warrior_Source_Warrior_WarriorGameMode_h_12_ACCESSORS \
-	FID_Warrior_Source_Warrior_WarriorGameMode_h_12_INCLASS_NO_PURE_DECLS \
-	FID_Warrior_Source_Warrior_WarriorGameMode_h_12_ENHANCED_CONSTRUCTORS \
+	FID_02_Warrior_Source_Warrior_WarriorGameMode_h_12_SPARSE_DATA \
+	FID_02_Warrior_Source_Warrior_WarriorGameMode_h_12_SPARSE_DATA_PROPERTY_ACCESSORS \
+	FID_02_Warrior_Source_Warrior_WarriorGameMode_h_12_EDITOR_ONLY_SPARSE_DATA_PROPERTY_ACCESSORS \
+	FID_02_Warrior_Source_Warrior_WarriorGameMode_h_12_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_02_Warrior_Source_Warrior_WarriorGameMode_h_12_ACCESSORS \
+	FID_02_Warrior_Source_Warrior_WarriorGameMode_h_12_INCLASS_NO_PURE_DECLS \
+	FID_02_Warrior_Source_Warrior_WarriorGameMode_h_12_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
@@ -58,7 +58,7 @@ PRAGMA_ENABLE_DEPRECATION_WARNINGS
 template<> WARRIOR_API UClass* StaticClass<class AWarriorGameMode>();
 
 #undef CURRENT_FILE_ID
-#define CURRENT_FILE_ID FID_Warrior_Source_Warrior_WarriorGameMode_h
+#define CURRENT_FILE_ID FID_02_Warrior_Source_Warrior_WarriorGameMode_h
 
 
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
