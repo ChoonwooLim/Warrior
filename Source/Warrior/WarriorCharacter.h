@@ -61,6 +61,10 @@ private:
 	UInputAction* ClimbAction;
 
 	void OnClimbActionStarted(const FInputActionValue& Value);
+
+	void StartFlying();
+
+	void StopFlying();
 			
 
 protected:

@@ -3,6 +3,21 @@
 
 #include "Components/CustomMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "GameFramework/Character.h"
+
+
+void UCustomMovementComponent::SetUpdatedComponent(USceneComponent* NewUpdatedComponent)
+{
+    Super::SetUpdatedComponent(NewUpdatedComponent);
+
+    // GetOwner()를 통해 안전하게 CharacterOwner 초기화
+    CharacterOwner = Cast<ACharacter>(GetOwner());
+
+    if (!CharacterOwner)
+    {
+        UE_LOG(LogTemp, Error, TEXT("CharacterOwner is NULL in CustomMovementComponent!"));
+    }
+}
 
 
 #pragma region Climb Traces
@@ -11,6 +26,8 @@
 TArray<FHitResult> UCustomMovementComponent::DoCapsuleTraceMultiByObject(const FVector& Start, const FVector& End, bool bShowDebugShape)
 {
 	TArray<FHitResult> OutCapsuleTraceHitResults;
+
+    if (!CharacterOwner) return OutCapsuleTraceHitResults; // 방어 코드 추가
 	
 	UKismetSystemLibrary::CapsuleTraceMultiForObjects(
         this, //현재 CustomMovementComponent 객체를 나타냄.
@@ -36,4 +53,137 @@ TArray<FHitResult> UCustomMovementComponent::DoCapsuleTraceMultiByObject(const F
 	return OutCapsuleTraceHitResults; //감지된 모든 충돌 정보를 담은 TArray<FHitResult>를 반환.
 }
 
+
 #pragma endregion
+
+#pragma region Swim Traces
+
+bool UCustomMovementComponent::CheckSwimmingCondition()
+{
+    if (!CharacterOwner)
+    {
+        return false; // 캐릭터가 없으면 수영 체크 불가능
+    }
+
+    FHitResult HitResult;
+    FVector Start = CharacterOwner->GetActorLocation();
+    FVector End = Start - FVector(0.f, 0.f, SwimTraceDepth);
+
+    bool bHit = GetWorld()->SweepSingleByObjectType(
+        HitResult,
+        Start,
+        End,
+        FQuat::Identity,
+        FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
+        FCollisionShape::MakeSphere(SwimTraceRadius),
+        FCollisionQueryParams(NAME_None, false, CharacterOwner)
+    );
+
+    if (bHit)
+    {
+        // 물 깊이 체크 (너무 얕은 곳에서는 수영 불가)
+        float WaterDepth = Start.Z - HitResult.ImpactPoint.Z;
+        if (WaterDepth < 30.f) return false;
+
+        // ActorHasTag 또는 SurfaceType으로 확인 가능
+        AActor* HitActor = HitResult.GetActor();
+        if (HitActor && HitActor->ActorHasTag("Water"))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+#pragma endregion
+
+#pragma region Flight Traces
+
+bool UCustomMovementComponent::CheckFlightCondition()
+{
+    if (!CharacterOwner) return false;
+
+    if (IsCeilingAbove())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Flight Blocked: Ceiling too close!"));
+        return false; // 천장이 너무 가까우면 비행 불가능
+    }
+
+    if (CheckObstacleAhead())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Flight Blocked: Obstacle ahead!"));
+        return false; // 앞에 장애물이 있으면 비행 불가능
+    }
+
+    if (!IsGroundBelow())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Flight Blocked: No ground detected!"));
+        return false; // 지면이 감지되지 않으면 비행 불가능
+    }
+    return true;
+}
+
+bool UCustomMovementComponent::IsCeilingAbove()
+{
+    if (!CharacterOwner) return false;
+
+    FHitResult HitResult;
+    FVector Start = CharacterOwner->GetActorLocation();
+    FVector End = Start + FVector(0.f, 0.f, CeilingTraceDistance);
+
+    bool bHit = GetWorld()->LineTraceSingleByChannel(
+        HitResult,
+        Start,
+        End,
+        ECC_Visibility,
+        FCollisionQueryParams(NAME_None, false, CharacterOwner)
+    );
+
+    return bHit; // 천장이 감지되면 true 반환
+}
+
+bool UCustomMovementComponent::IsGroundBelow()
+{
+    if (!CharacterOwner) return false;
+
+    FHitResult HitResult;
+    FVector Start = CharacterOwner->GetActorLocation();
+    FVector End = Start - FVector(0.f, 0.f, GroundTraceDistance);
+
+    bool bHit = GetWorld()->LineTraceSingleByChannel(
+        HitResult,
+        Start,
+        End,
+        ECC_Visibility,
+        FCollisionQueryParams(NAME_None, false, CharacterOwner)
+    );
+
+    return bHit; // 지면이 감지되면 true 반환
+}
+
+bool UCustomMovementComponent::CheckObstacleAhead()
+{
+    if (!CharacterOwner) return false;
+
+    FHitResult HitResult;
+    FVector Start = CharacterOwner->GetActorLocation();
+    FVector End = Start + CharacterOwner->GetActorForwardVector() * ObstacleTraceDistance;
+
+    bool bHit = GetWorld()->SweepSingleByChannel(
+        HitResult,
+        Start,
+        End,
+        FQuat::Identity,
+        ECC_Visibility,
+        FCollisionShape::MakeCapsule(50.f, 100.f),
+        FCollisionQueryParams(NAME_None, false, CharacterOwner)
+    );
+
+    return bHit; // 장애물이 감지되면 true 반환
+}
+
+
+
+
+#pragma endregion
+

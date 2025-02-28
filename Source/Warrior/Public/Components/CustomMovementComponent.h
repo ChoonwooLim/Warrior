@@ -9,14 +9,19 @@
 /**
  * 
  */
+
 UCLASS()
 class WARRIOR_API UCustomMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
 
 private:
-	
+
+	void SetUpdatedComponent(USceneComponent* NewUpdatedComponent);
+
 #pragma region Climb Traces
+
+	
 
 	TArray<FHitResult> DoCapsuleTraceMultiByObject(const FVector& Start, const FVector& End, bool bShowDebugShape = false );
 	/*반환값: TArray<FHitResult>
@@ -28,6 +33,7 @@ private:
 
 
 #pragma endregion
+
 
 #pragma region ClimbVariables
 
@@ -55,7 +61,57 @@ private:
 
 #pragma endregion
 
-	
+#pragma region Swim Traces
+
+	UFUNCTION(BlueprintCallable, Category = "Character Movement: Swimming")
+	bool CheckSwimmingCondition();
+
+#pragma endregion
+
+#pragma region Swim Variables
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Swimming", meta = (AllowPrivateAccess = "true"))
+	float SwimTraceRadius = 50.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Swimming", meta = (AllowPrivateAccess = "true"))
+	float SwimTraceDepth = 100.f;
+
+#pragma endregion
+
+#pragma region Flight Traces
+
+public:
+
+    UFUNCTION(BlueprintCallable, Category = "Character Movement: Flying")
+    bool CheckFlightCondition();
+
+    UFUNCTION(BlueprintCallable, Category = "Character Movement: Flying")
+    bool IsCeilingAbove();
+
+    UFUNCTION(BlueprintCallable, Category = "Character Movement: Flying")
+    bool IsGroundBelow();
+
+    UFUNCTION(BlueprintCallable, Category = "Character Movement: Flying")
+    bool CheckObstacleAhead();
+
+#pragma endregion
+
+#pragma region Flight Variables
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Flying", meta = (AllowPrivateAccess = "true"))
+    float FlightTraceDistance = 500.f;  // 비행 가능 여부를 체크할 거리
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Flying", meta = (AllowPrivateAccess = "true"))
+    float CeilingTraceDistance = 200.f; // 천장 감지 거리
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Flying", meta = (AllowPrivateAccess = "true"))
+    float GroundTraceDistance = 1000.f; // 지면 감지 거리
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Flying", meta = (AllowPrivateAccess = "true"))
+    float ObstacleTraceDistance = 300.f; // 장애물 감지 거리
+
+#pragma endregion
+
 
 };
 

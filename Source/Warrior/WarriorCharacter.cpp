@@ -95,7 +95,13 @@ void AWarriorCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
+	// CustomMovementComponent 초기화 (안전한 방식)
+	CustomMovementComponent = Cast<UCustomMovementComponent>(GetCharacterMovement());
 
+	if (!CustomMovementComponent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("CustomMovementComponent is NULL in WarriorCharacter!"));
+	}
 
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -171,4 +177,30 @@ void AWarriorCharacter::Look(const FInputActionValue& Value)
 void AWarriorCharacter::OnClimbActionStarted(const FInputActionValue& Value)
 {
 	Debug::Print(TEXT("Climb Action Started"));
+}
+
+void AWarriorCharacter::StartFlying()
+{
+	if (!CustomMovementComponent) return;
+
+	if (CustomMovementComponent->CheckFlightCondition() && GetCharacterMovement()->MovementMode != MOVE_Flying)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Character is now flying."));
+		CustomMovementComponent->SetMovementMode(MOVE_Flying);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Flight start blocked."));
+	}
+}
+
+void AWarriorCharacter::StopFlying()
+{
+	if (!CustomMovementComponent) return;
+
+	if (GetCharacterMovement()->MovementMode == MOVE_Flying)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Character is stopping flight."));
+		CustomMovementComponent->SetMovementMode(MOVE_Falling);
+	}
 }
