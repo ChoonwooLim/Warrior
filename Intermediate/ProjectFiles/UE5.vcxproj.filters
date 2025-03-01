@@ -7048,6 +7048,21 @@
     <None Include="D:\Program Files\UE_5.3\Engine\Plugins\FastBuildController\FastBuildController.uplugin">
       <Filter>Plugins\FastBuildController</Filter>
     </None>
+    <Filter Include="Plugins\Foundry">
+      <UniqueIdentifier>{6F262791-8AE3-37E6-BE6F-64B6ECFD38CA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\Foundry\NukeServer">
+      <UniqueIdentifier>{CD0BC397-F7BF-3590-8354-E2A778BD3162}</UniqueIdentifier>
+    </Filter>
+    <None Include="D:\Program Files\UE_5.3\Engine\Plugins\Foundry\NukeServer\NukeServer.uplugin">
+      <Filter>Plugins\Foundry\NukeServer</Filter>
+    </None>
+    <Filter Include="Plugins\Foundry\NukeServer\Resources">
+      <UniqueIdentifier>{19FAAD3F-E939-33EB-BBA4-CA54EFBC0645}</UniqueIdentifier>
+    </Filter>
+    <None Include="D:\Program Files\UE_5.3\Engine\Plugins\Foundry\NukeServer\Resources\Icon128.png">
+      <Filter>Plugins\Foundry\NukeServer\Resources</Filter>
+    </None>
     <Filter Include="Plugins\FX">
       <UniqueIdentifier>{267AB293-0B1D-3F1F-B654-29C2E4EC34A8}</UniqueIdentifier>
     </Filter>
@@ -143425,6 +143440,27 @@
     <ClInclude Include="D:\Program Files\UE_5.3\Engine\Plugins\FastBuildController\Source\Public\FastBuildUtilities.h">
       <Filter>Plugins\FastBuildController\Source\Public</Filter>
     </ClInclude>
+    <Filter Include="Plugins\Foundry\NukeServer\Source">
+      <UniqueIdentifier>{29FB1425-8846-3312-A6D7-0419335FE17C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\Foundry\NukeServer\Source\FoundryCryptomattePass">
+      <UniqueIdentifier>{D3E251A7-AB21-3190-A79D-C4036C46DED7}</UniqueIdentifier>
+    </Filter>
+    <None Include="D:\Program Files\UE_5.3\Engine\Plugins\Foundry\NukeServer\Source\FoundryCryptomattePass\FoundryCryptomattePass.Build.cs">
+      <Filter>Plugins\Foundry\NukeServer\Source\FoundryCryptomattePass</Filter>
+    </None>
+    <Filter Include="Plugins\Foundry\NukeServer\Source\FoundryServer">
+      <UniqueIdentifier>{7C9E5B80-F70E-358E-9A25-992ED5F17F66}</UniqueIdentifier>
+    </Filter>
+    <None Include="D:\Program Files\UE_5.3\Engine\Plugins\Foundry\NukeServer\Source\FoundryServer\FoundryServer.Build.cs">
+      <Filter>Plugins\Foundry\NukeServer\Source\FoundryServer</Filter>
+    </None>
+    <Filter Include="Plugins\Foundry\NukeServer\Source\FoundrySharedUtils">
+      <UniqueIdentifier>{D3D4E0B2-3707-321C-BC54-6627FD956F5A}</UniqueIdentifier>
+    </Filter>
+    <None Include="D:\Program Files\UE_5.3\Engine\Plugins\Foundry\NukeServer\Source\FoundrySharedUtils\FoundrySharedUtils.Build.cs">
+      <Filter>Plugins\Foundry\NukeServer\Source\FoundrySharedUtils</Filter>
+    </None>
     <Filter Include="Plugins\FX\CascadeToNiagaraConverter\Source">
       <UniqueIdentifier>{996AC5EE-27D5-3B37-8E99-01B6EF64A6A8}</UniqueIdentifier>
     </Filter>

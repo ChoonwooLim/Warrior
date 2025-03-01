@@ -58,9 +58,28 @@ private:
 	void Look(const FInputActionValue& Value);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	/*언리얼의 Enhanced Input System을 사용하여 입력을 처리하는 변수.
+                   EditAnywhere → 블루프린트에서 수정 가능.
+                   BlueprintReadOnly → 블루프린트에서 읽을 수 있지만, 변경은 불가능.
+                   AllowPrivateAccess = "true" → private 변수여도 블루프린트에서 접근 가능.*/
 	UInputAction* ClimbAction;
 
-	void OnClimbActionStarted(const FInputActionValue& Value);
+	void OnClimbActionStarted(const FInputActionValue& Value); //Climb입력이 감지되면 실행될 함수로 SetupPlayerInputComponent()에서 바인딩.
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* SwimAction;
+
+	void OnSwimActionStarted(const FInputActionValue& Value); //Swim입력이 감지되면 실행될 함수로 SetupPlayerInputComponent()에서 바인딩.
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* FlyAction;
+
+	void OnFlyActionStarted(const FInputActionValue& Value); //Fly입력이 감지되면 실행될 함수로 SetupPlayerInputComponent()에서 바인딩.
+
+
+
+	void OnJumpActionStarted(const FInputActionValue& Value);
 
 	void StartFlying();
 

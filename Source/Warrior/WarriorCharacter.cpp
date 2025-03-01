@@ -115,25 +115,43 @@ void AWarriorCharacter::BeginPlay()
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Input
+// 이 함수는 입력(Input) 처리를 설정하는 역할을 하며, 언리얼 엔진의 Enhanced Input System을 사용하여 캐릭터의 동작을 정의하고 있음.
 
 void AWarriorCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+/*SetupPlayerInputComponent()는 언리얼 엔진에서 입력 바인딩을 설정하는 함수로서  PlayerInputComponent를 통해 입력을 받을 수 있도록 함.
+        ACharacter에서 상속받은 함수이며, 언리얼 엔진이 자동으로 호출하는 함수. 즉, 이 함수는 캐릭터가 어떤 입력을 받을지 정의하는 곳.*/
 {
-	// Set up action bindings
+	// Enhanced Input Component를 사용하여 입력 시스템 초기화
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
+		/*PlayerInputComponent를 UEnhancedInputComponent로 캐스팅하여, Enhanced Input을 사용할 수 있도록 변환.
+          언리얼 엔진의 Enhanced Input 시스템을 사용하면 더 강력한 입력 처리가 가능.
+           if문을 통해 캐스팅이 성공했을 경우에만 입력을 바인딩하도록 설정. 즉, 새로운 Enhanced Input System이 적용된 경우에만 바인딩을 진행함.*/
 		
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		// Jumping->점프 입력 바인딩
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, & AWarriorCharacter::OnJumpActionStarted);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		/*JumpAction 입력이 시작되면(ETriggerEvent::Started), ACharacter::Jump() 함수 호출 → 캐릭터가 점프.
+          JumpAction 입력이 완료되면(ETriggerEvent::Completed), ACharacter::StopJumping() 호출 → 점프 종료.
+           즉, 점프 키를 누르면 점프하고, 키를 떼면 점프 상태를 종료함.*/
 
-		// Moving
+		   // Moving -> 이동 입력 바인딩
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AWarriorCharacter::Move);
+		/*MoveAction 입력이 감지되면(ETriggerEvent::Triggered), AWarriorCharacter::Move() 함수 호출 → 캐릭터 이동.
+		  즉, 이동 입력이 감지되면 캐릭터가 이동하도록 설정함. MoveAction은 방향키(WASD)나 아날로그 스틱 입력을 처리함.*/ 
 
-		// Looking
+		// Looking ->카메라 회전 입력 바인딩
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AWarriorCharacter::Look);
+		/*LookAction 입력이 감지되면(ETriggerEvent::Triggered), AWarriorCharacter::Look() 함수 호출 → 카메라 회전.
+		  즉, 마우스나 컨트롤러의 오른쪽 스틱 입력을 통해 카메라 회전을 처리 즉, LookAction이 실행되면 Look() 함수가 호출되어 시점 변경이 가능해짐.*/
 
-		// climbing
+		  // climbing -> 등반 입력 바인딩
 		EnhancedInputComponent->BindAction(ClimbAction, ETriggerEvent::Started, this, &AWarriorCharacter::OnClimbActionStarted);
+
+		// Swimming -> 수영 입력 바인딩
+		EnhancedInputComponent->BindAction(SwimAction, ETriggerEvent::Started, this, &AWarriorCharacter::OnSwimActionStarted);
+
+		// Flying -> 비행 입력 바인딩
+		EnhancedInputComponent->BindAction(FlyAction, ETriggerEvent::Started, this, &AWarriorCharacter::OnFlyActionStarted);
 	}
 	
 }
@@ -179,6 +197,53 @@ void AWarriorCharacter::OnClimbActionStarted(const FInputActionValue& Value)
 	Debug::Print(TEXT("Climb Action Started"));
 }
 
+void AWarriorCharacter::OnSwimActionStarted(const FInputActionValue& Value)
+{
+	Debug::Print(TEXT("Swim Action Started"));
+}
+
+void AWarriorCharacter::OnFlyActionStarted(const FInputActionValue& Value)
+{
+	static double LastTapTime = 0.0;
+	double CurrentTime = GetWorld()->GetTimeSeconds();
+
+	// CustomMovementComponent가 없으면 실행하지 않음
+	if (!CustomMovementComponent) return;
+
+	// 현재 이동 모드 확인
+	if (CustomMovementComponent->IsFlying())  // 비행 중이라면
+	{
+		// 한 번만 눌러도 비행 모드 종료
+		CustomMovementComponent->SetMovementMode(MOVE_Walking);
+		Debug::Print(TEXT("Fly Mode Deactivated"));
+		return;  // 여기서 함수 종료 (더블탭 체크 안 함)
+	}
+
+	// 더블탭 감지 (0.3초 이내로 두 번 눌렀을 때만 비행 시작)
+	if (CurrentTime - LastTapTime < 0.3)
+	{
+		CustomMovementComponent->SetMovementMode(MOVE_Flying);
+		Debug::Print(TEXT("Fly Mode Activated"));
+	}
+
+	// 마지막 입력 시간 업데이트
+	LastTapTime = CurrentTime;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+void AWarriorCharacter::OnJumpActionStarted(const FInputActionValue& Value)
+{
+	if (CustomMovementComponent && CustomMovementComponent->IsFlying())
+	{
+		// 비행 중에는 점프 입력을 무시 (OnFlyActionStarted에서 처리)
+		return;
+	}
+
+	// 일반 점프 실행
+	Jump();
+}
+
 void AWarriorCharacter::StartFlying()
 {
 	if (!CustomMovementComponent) return;
@@ -189,6 +254,7 @@ void AWarriorCharacter::StartFlying()
 		CustomMovementComponent->SetMovementMode(MOVE_Flying);
 	}
 	else
+
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Flight start blocked."));
 	}
