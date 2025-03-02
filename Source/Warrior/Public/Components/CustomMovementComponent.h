@@ -15,13 +15,21 @@ class WARRIOR_API UCustomMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
 
+public:
+    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 private:
 
 	void SetUpdatedComponent(USceneComponent* NewUpdatedComponent);
+    /*USceneComponent* 타입의 새로운 컴포넌트를 입력받아 이동 컴포넌트로 설정하는 함수.
+      UpdatedComponent는 UCharacterMovementComponent 또는 UCustomMovementComponent에서 캐릭터의 이동을 처리하는 핵심 컴포넌트.
+      예를 들어, RootComponent 또는 CapsuleComponent를 이동 대상 컴포넌트로 지정할 수 있음.
+      즉, "이동해야 할 대상 컴포넌트를 설정하는 역할"을 함.*/
+
+
+private:
 
 #pragma region Climb Traces
-
-	
 
 	TArray<FHitResult> DoCapsuleTraceMultiByObject(const FVector& Start, const FVector& End, bool bShowDebugShape = false );
 	/*반환값: TArray<FHitResult>
@@ -31,6 +39,16 @@ private:
               End: 캡슐 트레이스 종료 위치.
               bShowDebugShape (기본값 false): 디버그용으로 트레이스 결과를 표시할지 여부.*/
 
+    FHitResult DoLineTraceSingleByObject(const FVector& Start, const FVector& End, bool bShowDebugShape = false);
+
+
+#pragma endregion
+
+#pragma region ClimbCore
+
+    void TraceClimbableSurfaces();
+
+    void TraceFromEyeHeight(float TraceDistance, float TraceStartOffset = 0.f);
 
 #pragma endregion
 

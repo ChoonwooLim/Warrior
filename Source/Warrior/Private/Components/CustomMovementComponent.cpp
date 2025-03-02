@@ -4,6 +4,8 @@
 #include "Components/CustomMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/Character.h"
+#include "DrawDebugHelpers.h"
+#include "Warrior/WarriorCharacter.h"
 
 
 void UCustomMovementComponent::SetUpdatedComponent(USceneComponent* NewUpdatedComponent)
@@ -17,6 +19,15 @@ void UCustomMovementComponent::SetUpdatedComponent(USceneComponent* NewUpdatedCo
     {
         UE_LOG(LogTemp, Error, TEXT("CharacterOwner is NULL in CustomMovementComponent!"));
     }
+}
+
+void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+    
+    TraceClimbableSurfaces();
+    TraceFromEyeHeight(100.f);
 }
 
 
@@ -45,14 +56,59 @@ TArray<FHitResult> UCustomMovementComponent::DoCapsuleTraceMultiByObject(const F
 		/*디버그 트레이스 옵션
            bShowDebugShape == true이면 EDrawDebugTrace::ForOneFrame으로 설정 → 1프레임 동안 디버그 라인 표시.
            bShowDebugShape == false이면 EDrawDebugTrace::None으로 설정 → 디버그 라인 비활성화.*/
-
+          
 		OutCapsuleTraceHitResults, //충돌 결과를 저장할 배열. 트레이스가 감지한 모든 충돌 정보를 여기에 저장함.
 		false //물리 머티리얼(Physical Material) 정보를 반환할지 여부.  false로 설정되어 있어 물리 머티리얼 정보를 무시함.
 	);
 
+	/* 강제로 라인을 그려 디버깅하기
+        DrawDebugLine(GetWorld(),Start,End,FColor::Red,false, 2.0f, 0, 2.0f);*/
+
 	return OutCapsuleTraceHitResults; //감지된 모든 충돌 정보를 담은 TArray<FHitResult>를 반환.
 }
 
+FHitResult UCustomMovementComponent::DoLineTraceSingleByObject(const FVector& Start, const FVector& End, bool bShowDebugShape)
+{
+    FHitResult OutHit;
+
+    UKismetSystemLibrary::LineTraceSingleForObjects(
+        this,
+        Start,
+        End,
+        ClimbableSurfaceTraceTypes,
+        false,
+        TArray<AActor*>(),
+        bShowDebugShape ? EDrawDebugTrace::ForOneFrame : EDrawDebugTrace::None,
+        OutHit,
+        false
+    );
+
+    return OutHit;
+}
+
+#pragma endregion
+
+#pragma region ClimbCore
+
+void UCustomMovementComponent::TraceClimbableSurfaces()
+{
+    const FVector StartOffset = UpdatedComponent->GetForwardVector() * 30.f;
+    const FVector Start = UpdatedComponent->GetComponentLocation() + StartOffset;
+    const FVector End = Start + UpdatedComponent->GetForwardVector();
+
+    DoCapsuleTraceMultiByObject(Start, End, true);
+}
+
+void UCustomMovementComponent::TraceFromEyeHeight(float TraceDistance, float TraceStartOffset)
+{
+    const FVector ComponentLocation = UpdatedComponent->GetComponentLocation();
+    const FVector EyeHeightOffset = UpdatedComponent->GetUpVector() * (CharacterOwner->BaseEyeHeight + TraceStartOffset);
+
+    const FVector Start = ComponentLocation + EyeHeightOffset;
+    const FVector End = Start + UpdatedComponent->GetForwardVector() * TraceDistance;
+
+    DoLineTraceSingleByObject(Start, End, true);
+}
 
 #pragma endregion
 

@@ -72,6 +72,7 @@ private:
 
 	void OnSwimActionStarted(const FInputActionValue& Value); //Swim입력이 감지되면 실행될 함수로 SetupPlayerInputComponent()에서 바인딩.
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* FlyAction;
 
