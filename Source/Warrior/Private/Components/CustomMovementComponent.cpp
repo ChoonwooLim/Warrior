@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Components/CustomMovementComponent.h"
@@ -12,7 +12,7 @@ void UCustomMovementComponent::SetUpdatedComponent(USceneComponent* NewUpdatedCo
 {
     Super::SetUpdatedComponent(NewUpdatedComponent);
 
-    // GetOwner()¸¦ ÅëÇØ ¾ÈÀüÇÏ°Ô CharacterOwner ÃÊ±âÈ­
+    // GetOwner()ë¥¼ í†µí•´ ì•ˆì „í•˜ê²Œ CharacterOwner ì´ˆê¸°í™”
     CharacterOwner = Cast<ACharacter>(GetOwner());
 
     if (!CharacterOwner)
@@ -33,38 +33,38 @@ void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 #pragma region Climb Traces
 
-//Ä¸½¶ Æ®·¹ÀÌ½º(Capsule Trace) ¸¦ ½ÇÇàÇÏ¿© ¿©·¯ °³ÀÇ ¿ÀºêÁ§Æ®¿Í Ãæµ¹ ¿©ºÎ¸¦ °Ë»ç
+//ìº¡ìŠ íŠ¸ë ˆì´ìŠ¤(Capsule Trace) ë¥¼ ì‹¤í–‰í•˜ì—¬ ì—¬ëŸ¬ ê°œì˜ ì˜¤ë¸Œì íŠ¸ì™€ ì¶©ëŒ ì—¬ë¶€ë¥¼ ê²€ì‚¬
 TArray<FHitResult> UCustomMovementComponent::DoCapsuleTraceMultiByObject(const FVector& Start, const FVector& End, bool bShowDebugShape)
 {
 	TArray<FHitResult> OutCapsuleTraceHitResults;
 
-    if (!CharacterOwner) return OutCapsuleTraceHitResults; // ¹æ¾î ÄÚµå Ãß°¡
+    if (!CharacterOwner) return OutCapsuleTraceHitResults; // ë°©ì–´ ì½”ë“œ ì¶”ê°€
 	
 	UKismetSystemLibrary::CapsuleTraceMultiForObjects(
-        this, //ÇöÀç CustomMovementComponent °´Ã¼¸¦ ³ªÅ¸³¿.
-		Start, //Æ®·¹ÀÌ½ºÀÇ ½ÃÀÛ ÁöÁ¡
-		End, //Æ®·¹ÀÌ½ºÀÇ ³¡ ÁöÁ¡. º¸Åë Ä³¸¯ÅÍÀÇ ÇöÀç À§Ä¡(Start)¿¡¼­ ÀÌµ¿ ¹æÇâ(End)À» ¼³Á¤ÇÏ¿© º®À» °¨ÁöÇÔ.
-		ClimbCapsuleTraceRadius, //Ä¸½¶ Æ®·¹ÀÌ½ºÀÇ ¹İÁö¸§
-		ClimbCapsuleTraceHalfHeight, //Ä¸½¶ Æ®·¹ÀÌ½ºÀÇ ¹İ³ôÀÌ. Áï, Æ®·¹ÀÌ½º ¹üÀ§ Å©±â¸¦ ÀÇ¹ÌÇÔ.
-		ClimbableSurfaceTraceTypes, //°¨ÁöÇÒ ¿ÀºêÁ§Æ®ÀÇ À¯Çü(Object Type).
-		/*¿¹¸¦ µé¾î, ECC_WorldStatic (°íÁ¤µÈ ÁöÇü)ÀÌ³ª ECC_PhysicsBody (¹°¸® ¿ÀºêÁ§Æ®) °°Àº Å¸ÀÔÀ» ¼³Á¤ÇÒ ¼ö ÀÖÀ½.
-           ÀÌ º¯¼ö¸¦ ÅëÇØ Æ¯Á¤ Ç¥¸é¸¸ °¨ÁöÇÏµµ·Ï ÇÊÅÍ¸µÇÒ ¼ö ÀÖÀ½.*/
+        this, //í˜„ì¬ CustomMovementComponent ê°ì²´ë¥¼ ë‚˜íƒ€ëƒ„.
+		Start, //íŠ¸ë ˆì´ìŠ¤ì˜ ì‹œì‘ ì§€ì 
+		End, //íŠ¸ë ˆì´ìŠ¤ì˜ ë ì§€ì . ë³´í†µ ìºë¦­í„°ì˜ í˜„ì¬ ìœ„ì¹˜(Start)ì—ì„œ ì´ë™ ë°©í–¥(End)ì„ ì„¤ì •í•˜ì—¬ ë²½ì„ ê°ì§€í•¨.
+		ClimbCapsuleTraceRadius, //ìº¡ìŠ íŠ¸ë ˆì´ìŠ¤ì˜ ë°˜ì§€ë¦„
+		ClimbCapsuleTraceHalfHeight, //ìº¡ìŠ íŠ¸ë ˆì´ìŠ¤ì˜ ë°˜ë†’ì´. ì¦‰, íŠ¸ë ˆì´ìŠ¤ ë²”ìœ„ í¬ê¸°ë¥¼ ì˜ë¯¸í•¨.
+		ClimbableSurfaceTraceTypes, //ê°ì§€í•  ì˜¤ë¸Œì íŠ¸ì˜ ìœ í˜•(Object Type).
+		/*ì˜ˆë¥¼ ë“¤ì–´, ECC_WorldStatic (ê³ ì •ëœ ì§€í˜•)ì´ë‚˜ ECC_PhysicsBody (ë¬¼ë¦¬ ì˜¤ë¸Œì íŠ¸) ê°™ì€ íƒ€ì…ì„ ì„¤ì •í•  ìˆ˜ ìˆìŒ.
+           ì´ ë³€ìˆ˜ë¥¼ í†µí•´ íŠ¹ì • í‘œë©´ë§Œ ê°ì§€í•˜ë„ë¡ í•„í„°ë§í•  ìˆ˜ ìˆìŒ.*/
 
-		false, //ÀÚ±â ÀÚ½Å(Ä³¸¯ÅÍ)À» °¨Áö¿¡¼­ Á¦¿ÜÇÒÁö ¿©ºÎ. false·Î ¼³Á¤µÇ¾î ÀÖ¾î, ÀÚ±â ÀÚ½ÅÀ» °¨Áö ´ë»óÀ¸·Î Æ÷ÇÔÇÒ ¼öµµ ÀÖÀ½.
-		TArray<AActor*>(), //Æ®·¹ÀÌ½º¿¡¼­ ¹«½ÃÇÒ ¾×ÅÍ ¸®½ºÆ®. ±âº»ÀûÀ¸·Î ºó ¹è¿­ÀÌ¹Ç·Î, ¸ğµç ¾×ÅÍ¸¦ ´ë»óÀ¸·Î Æ®·¹ÀÌ½ºÇÔ.
+		false, //ìê¸° ìì‹ (ìºë¦­í„°)ì„ ê°ì§€ì—ì„œ ì œì™¸í• ì§€ ì—¬ë¶€. falseë¡œ ì„¤ì •ë˜ì–´ ìˆì–´, ìê¸° ìì‹ ì„ ê°ì§€ ëŒ€ìƒìœ¼ë¡œ í¬í•¨í•  ìˆ˜ë„ ìˆìŒ.
+		TArray<AActor*>(), //íŠ¸ë ˆì´ìŠ¤ì—ì„œ ë¬´ì‹œí•  ì•¡í„° ë¦¬ìŠ¤íŠ¸. ê¸°ë³¸ì ìœ¼ë¡œ ë¹ˆ ë°°ì—´ì´ë¯€ë¡œ, ëª¨ë“  ì•¡í„°ë¥¼ ëŒ€ìƒìœ¼ë¡œ íŠ¸ë ˆì´ìŠ¤í•¨.
 		bShowDebugShape ? EDrawDebugTrace::ForOneFrame : EDrawDebugTrace::None,
-		/*µğ¹ö±× Æ®·¹ÀÌ½º ¿É¼Ç
-           bShowDebugShape == trueÀÌ¸é EDrawDebugTrace::ForOneFrameÀ¸·Î ¼³Á¤ ¡æ 1ÇÁ·¹ÀÓ µ¿¾È µğ¹ö±× ¶óÀÎ Ç¥½Ã.
-           bShowDebugShape == falseÀÌ¸é EDrawDebugTrace::NoneÀ¸·Î ¼³Á¤ ¡æ µğ¹ö±× ¶óÀÎ ºñÈ°¼ºÈ­.*/
+		/*ë””ë²„ê·¸ íŠ¸ë ˆì´ìŠ¤ ì˜µì…˜
+           bShowDebugShape == trueì´ë©´ EDrawDebugTrace::ForOneFrameìœ¼ë¡œ ì„¤ì • â†’ 1í”„ë ˆì„ ë™ì•ˆ ë””ë²„ê·¸ ë¼ì¸ í‘œì‹œ.
+           bShowDebugShape == falseì´ë©´ EDrawDebugTrace::Noneìœ¼ë¡œ ì„¤ì • â†’ ë””ë²„ê·¸ ë¼ì¸ ë¹„í™œì„±í™”.*/
           
-		OutCapsuleTraceHitResults, //Ãæµ¹ °á°ú¸¦ ÀúÀåÇÒ ¹è¿­. Æ®·¹ÀÌ½º°¡ °¨ÁöÇÑ ¸ğµç Ãæµ¹ Á¤º¸¸¦ ¿©±â¿¡ ÀúÀåÇÔ.
-		false //¹°¸® ¸ÓÆ¼¸®¾ó(Physical Material) Á¤º¸¸¦ ¹İÈ¯ÇÒÁö ¿©ºÎ.  false·Î ¼³Á¤µÇ¾î ÀÖ¾î ¹°¸® ¸ÓÆ¼¸®¾ó Á¤º¸¸¦ ¹«½ÃÇÔ.
+		OutCapsuleTraceHitResults, //ì¶©ëŒ ê²°ê³¼ë¥¼ ì €ì¥í•  ë°°ì—´. íŠ¸ë ˆì´ìŠ¤ê°€ ê°ì§€í•œ ëª¨ë“  ì¶©ëŒ ì •ë³´ë¥¼ ì—¬ê¸°ì— ì €ì¥í•¨.
+		false //ë¬¼ë¦¬ ë¨¸í‹°ë¦¬ì–¼(Physical Material) ì •ë³´ë¥¼ ë°˜í™˜í• ì§€ ì—¬ë¶€.  falseë¡œ ì„¤ì •ë˜ì–´ ìˆì–´ ë¬¼ë¦¬ ë¨¸í‹°ë¦¬ì–¼ ì •ë³´ë¥¼ ë¬´ì‹œí•¨.
 	);
 
-	/* °­Á¦·Î ¶óÀÎÀ» ±×·Á µğ¹ö±ëÇÏ±â
+	/* ê°•ì œë¡œ ë¼ì¸ì„ ê·¸ë ¤ ë””ë²„ê¹…í•˜ê¸°
         DrawDebugLine(GetWorld(),Start,End,FColor::Red,false, 2.0f, 0, 2.0f);*/
 
-	return OutCapsuleTraceHitResults; //°¨ÁöµÈ ¸ğµç Ãæµ¹ Á¤º¸¸¦ ´ãÀº TArray<FHitResult>¸¦ ¹İÈ¯.
+	return OutCapsuleTraceHitResults; //ê°ì§€ëœ ëª¨ë“  ì¶©ëŒ ì •ë³´ë¥¼ ë‹´ì€ TArray<FHitResult>ë¥¼ ë°˜í™˜.
 }
 
 FHitResult UCustomMovementComponent::DoLineTraceSingleByObject(const FVector& Start, const FVector& End, bool bShowDebugShape)
@@ -116,34 +116,42 @@ void UCustomMovementComponent::TraceFromEyeHeight(float TraceDistance, float Tra
 
 bool UCustomMovementComponent::CheckSwimmingCondition()
 {
-    if (!CharacterOwner)
-    {
-        return false; // Ä³¸¯ÅÍ°¡ ¾øÀ¸¸é ¼ö¿µ Ã¼Å© ºÒ°¡´É
-    }
+    if (!CharacterOwner) return false; // ìºë¦­í„°ê°€ ì—†ìœ¼ë©´ ì²´í¬ ë¶ˆê°€ëŠ¥
 
     FHitResult HitResult;
     FVector Start = CharacterOwner->GetActorLocation();
-    FVector End = Start - FVector(0.f, 0.f, SwimTraceDepth);
+    FVector End = Start - FVector(0.f, 0.f, SwimTraceDepth); // ì•„ë˜ë¡œ íƒìƒ‰
 
+    // ë¬¼ì²´ ê°ì§€: ECC_Water (ìƒˆë¡œìš´ Collision Channel ì„¤ì • í•„ìš”)
     bool bHit = GetWorld()->SweepSingleByObjectType(
         HitResult,
         Start,
         End,
         FQuat::Identity,
-        FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
+        FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel1),  // ë¬¼ ì „ìš© ê°ì§€ ì±„ë„
+        /*ECC_GameTraceChannel1 â†’ ìœ„ì—ì„œ ECC_Waterë¥¼ ì¶”ê°€í•œ ê²½ìš°, ê²Œì„ ë‚´ Object Channel ë²ˆí˜¸ë¡œ ë“±ë¡ë¨.
+           (ECC_GameTraceChannel1, ECC_GameTraceChannel2 ë“± ë²ˆí˜¸ëŠ” ì„¤ì •ì— ë”°ë¼ ë‹¤ë¥¼ ìˆ˜ ìˆìŒ.)*/
+
         FCollisionShape::MakeSphere(SwimTraceRadius),
         FCollisionQueryParams(NAME_None, false, CharacterOwner)
     );
 
     if (bHit)
     {
-        // ¹° ±íÀÌ Ã¼Å© (³Ê¹« ¾èÀº °÷¿¡¼­´Â ¼ö¿µ ºÒ°¡)
+        // 1ï¸âƒ£ ë¬¼ì˜ ê¹Šì´ ì²´í¬ (ë„ˆë¬´ ì–•ì€ ê³³ì—ì„œëŠ” ìˆ˜ì˜ ë¶ˆê°€)
         float WaterDepth = Start.Z - HitResult.ImpactPoint.Z;
-        if (WaterDepth < 30.f) return false;
+        if (WaterDepth < 50.f) return false;  // ìµœì†Œ ìˆ˜ì˜ ê°€ëŠ¥ ê¹Šì´ ì„¤ì •
 
-        // ActorHasTag ¶Ç´Â SurfaceTypeÀ¸·Î È®ÀÎ °¡´É
+        // 2ï¸âƒ£ ê°ì§€ëœ ì•¡í„°ê°€ 'Water' íƒœê·¸ë¥¼ ê°€ì¡ŒëŠ”ì§€ í™•ì¸
         AActor* HitActor = HitResult.GetActor();
         if (HitActor && HitActor->ActorHasTag("Water"))
+        {
+            return true;
+        }
+
+        // 3ï¸âƒ£ ê°ì§€ëœ í‘œë©´ ë¨¸í‹°ë¦¬ì–¼ì´ ë¬¼ì¸ì§€ í™•ì¸ (ì¶”ê°€ ë³´ì™„)
+        UPhysicalMaterial* PhysMat = HitResult.PhysMaterial.Get();
+        if (PhysMat && PhysMat->SurfaceType == EPhysicalSurface::SurfaceType1) // SurfaceType_Water
         {
             return true;
         }
@@ -151,6 +159,7 @@ bool UCustomMovementComponent::CheckSwimmingCondition()
 
     return false;
 }
+
 #pragma endregion
 
 #pragma region Flight Traces
@@ -162,19 +171,19 @@ bool UCustomMovementComponent::CheckFlightCondition()
     if (IsCeilingAbove())
     {
         UE_LOG(LogTemp, Warning, TEXT("Flight Blocked: Ceiling too close!"));
-        return false; // ÃµÀåÀÌ ³Ê¹« °¡±î¿ì¸é ºñÇà ºÒ°¡´É
+        return false; // ì²œì¥ì´ ë„ˆë¬´ ê°€ê¹Œìš°ë©´ ë¹„í–‰ ë¶ˆê°€ëŠ¥
     }
 
     if (CheckObstacleAhead())
     {
         UE_LOG(LogTemp, Warning, TEXT("Flight Blocked: Obstacle ahead!"));
-        return false; // ¾Õ¿¡ Àå¾Ö¹°ÀÌ ÀÖÀ¸¸é ºñÇà ºÒ°¡´É
+        return false; // ì•ì— ì¥ì• ë¬¼ì´ ìˆìœ¼ë©´ ë¹„í–‰ ë¶ˆê°€ëŠ¥
     }
 
     if (!IsGroundBelow())
     {
         UE_LOG(LogTemp, Warning, TEXT("Flight Blocked: No ground detected!"));
-        return false; // Áö¸éÀÌ °¨ÁöµÇÁö ¾ÊÀ¸¸é ºñÇà ºÒ°¡´É
+        return false; // ì§€ë©´ì´ ê°ì§€ë˜ì§€ ì•Šìœ¼ë©´ ë¹„í–‰ ë¶ˆê°€ëŠ¥
     }
     return true;
 }
@@ -195,7 +204,7 @@ bool UCustomMovementComponent::IsCeilingAbove()
         FCollisionQueryParams(NAME_None, false, CharacterOwner)
     );
 
-    return bHit; // ÃµÀåÀÌ °¨ÁöµÇ¸é true ¹İÈ¯
+    return bHit; // ì²œì¥ì´ ê°ì§€ë˜ë©´ true ë°˜í™˜
 }
 
 bool UCustomMovementComponent::IsGroundBelow()
@@ -214,7 +223,7 @@ bool UCustomMovementComponent::IsGroundBelow()
         FCollisionQueryParams(NAME_None, false, CharacterOwner)
     );
 
-    return bHit; // Áö¸éÀÌ °¨ÁöµÇ¸é true ¹İÈ¯
+    return bHit; // ì§€ë©´ì´ ê°ì§€ë˜ë©´ true ë°˜í™˜
 }
 
 bool UCustomMovementComponent::CheckObstacleAhead()
@@ -235,7 +244,7 @@ bool UCustomMovementComponent::CheckObstacleAhead()
         FCollisionQueryParams(NAME_None, false, CharacterOwner)
     );
 
-    return bHit; // Àå¾Ö¹°ÀÌ °¨ÁöµÇ¸é true ¹İÈ¯
+    return bHit; // ì¥ì• ë¬¼ì´ ê°ì§€ë˜ë©´ true ë°˜í™˜
 }
 
 

@@ -1,0 +1,16 @@
+{
+	"version": 1,
+	"changelists": [
+		{
+			"guid": "00000000000000000000000000000000",
+			"description": "Default Uncontrolled Changelist",
+			"files": [
+				"I:/000_UnrealWork/02_Warrior/Content/__ExternalActors__/Maps/Warrior_v01/1/T7/TSQXR0UUW2ROH9ROF9GZBN.uasset",
+				"I:/000_UnrealWork/02_Warrior/Content/__ExternalActors__/Maps/Warrior_v01/A/R6/JDXI2QOVRKT6EC821K2NUU.uasset",
+				"I:/000_UnrealWork/02_Warrior/Content/Maps/Warrior_v01.umap",
+				"I:/000_UnrealWork/02_Warrior/Content/__ExternalActors__/Maps/Warrior_v01/B/QY/8UPHHKTUUUQKF60WVDP9DZ.uasset",
+				"I:/000_UnrealWork/02_Warrior/Content/__ExternalActors__/Maps/Warrior_v01/8/ZB/V4XO8OG9K4LQ0NPTTALF36.uasset"
+			]
+		}
+	]
+}

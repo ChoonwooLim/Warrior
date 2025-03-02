@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 #include "CustomMovementComponent.generated.h"
+
 
 /**
  * 
