@@ -199,8 +199,23 @@ void AWarriorCharacter::OnClimbActionStarted(const FInputActionValue& Value)
 
 void AWarriorCharacter::OnSwimActionStarted(const FInputActionValue& Value)
 {
-	Debug::Print(TEXT("Swim Action Started"));
+	if (CustomMovementComponent)
+	{
+		if (CustomMovementComponent->IsSwimming()) // 이미 수영 중이면 해제
+		{
+			CustomMovementComponent->SetMovementMode(MOVE_Walking);
+			Debug::Print(TEXT("Swim Mode Deactivated"));
+		}
+		else if (CustomMovementComponent->CheckSwimmingCondition()) // 물에 있으면 수영 시작
+		{
+			CustomMovementComponent->SetMovementMode(MOVE_Swimming);
+			Debug::Print(TEXT("Swim Mode Activated"));
+		}
+	}
 }
+
+
+
 
 void AWarriorCharacter::OnFlyActionStarted(const FInputActionValue& Value)
 {

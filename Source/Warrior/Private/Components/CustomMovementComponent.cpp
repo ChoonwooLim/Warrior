@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "DrawDebugHelpers.h"
 #include "Warrior/WarriorCharacter.h"
+#include "Components/CapsuleComponent.h"
 
 
 void UCustomMovementComponent::SetUpdatedComponent(USceneComponent* NewUpdatedComponent)
@@ -25,9 +26,28 @@ void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    
+    // 등반 감지 (기존 기능)
     TraceClimbableSurfaces();
     TraceFromEyeHeight(100.f);
+
+
+    // 수영 가능 여부 체크 후 자동 전환
+    if (CheckSwimmingCondition())
+    {
+        if (MovementMode != MOVE_Swimming) // 이미 수영 중이 아니면 변경
+        {
+            SetMovementMode(MOVE_Swimming);
+            GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, TEXT("Automatic Swimming Mode Activated"));
+        }
+    }
+    else
+    {
+        if (MovementMode == MOVE_Swimming) // 물을 벗어나면 걷기 모드로 변경
+        {
+            SetMovementMode(MOVE_Walking);
+            GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, TEXT("Automatic Swimming Mode Deactivated"));
+        }
+    }
 }
 
 
@@ -112,53 +132,103 @@ void UCustomMovementComponent::TraceFromEyeHeight(float TraceDistance, float Tra
 
 #pragma endregion
 
-#pragma region Swim Traces
-
 bool UCustomMovementComponent::CheckSwimmingCondition()
 {
-    if (!CharacterOwner) return false; // 캐릭터가 없으면 체크 불가능
+    ACharacter* Character = Cast<ACharacter>(CharacterOwner);
+    if (!Character || !Character->GetCapsuleComponent())
+    {
+        UE_LOG(LogTemp, Error, TEXT("CheckSwimmingCondition: CharacterOwner is not valid!"));
+        return false;
+    }
 
-    FHitResult HitResult;
-    FVector Start = CharacterOwner->GetActorLocation();
-    FVector End = Start - FVector(0.f, 0.f, SwimTraceDepth); // 아래로 탐색
+    // 🎯 허리 위치 계산 (허리는 캡슐 높이의 약 40% 지점)
+    FVector WaistOffset = FVector(0.f, 0.f, Character->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.4f);
+    FVector WaistLocation = Character->GetActorLocation() - WaistOffset; // 허리 위치
 
-    // 물체 감지: ECC_Water (새로운 Collision Channel 설정 필요)
-    bool bHit = GetWorld()->SweepSingleByObjectType(
-        HitResult,
-        Start,
-        End,
+    // 🎯 물 표면 감지 (허리 아래로 트레이스)
+    FVector WaterTraceStart = WaistLocation;
+    FVector WaterTraceEnd = WaterTraceStart - FVector(0.f, 0.f, SwimTraceDepth);
+
+    FHitResult WaterHitResult;
+    bool bWaterHit = GetWorld()->SweepSingleByObjectType(
+        WaterHitResult,
+        WaterTraceStart,
+        WaterTraceEnd,
         FQuat::Identity,
-        FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel1),  // 물 전용 감지 채널
-        /*ECC_GameTraceChannel1 → 위에서 ECC_Water를 추가한 경우, 게임 내 Object Channel 번호로 등록됨.
-           (ECC_GameTraceChannel1, ECC_GameTraceChannel2 등 번호는 설정에 따라 다를 수 있음.)*/
-
+        FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel1), // 물 감지용 채널
         FCollisionShape::MakeSphere(SwimTraceRadius),
-        FCollisionQueryParams(NAME_None, false, CharacterOwner)
+        FCollisionQueryParams(NAME_None, false, Character)
     );
 
-    if (bHit)
+    // 감지된 물 표면의 절대 높이 (물 감지가 실패하면 기본값을 설정)
+    float WaterSurfaceZ = bWaterHit ? WaterHitResult.Location.Z : (Character->GetActorLocation().Z - 200.f);
+
+    // 🎯 물 높이와 허리 높이 비교하여 WaterDepth 계산
+    float WaterDepth = WaterSurfaceZ - WaistLocation.Z;
+
+    UE_LOG(LogTemp, Warning, TEXT("CheckSwimmingCondition: WaterDepth = %f, WaterSurfaceZ = %f, WaistZ = %f"), WaterDepth, WaterSurfaceZ, WaistLocation.Z);
+
+    // 🎯 물 높이가 허리보다 높으면 수영 모드
+    if (WaterSurfaceZ > WaistLocation.Z)
     {
-        // 1️⃣ 물의 깊이 체크 (너무 얕은 곳에서는 수영 불가)
-        float WaterDepth = Start.Z - HitResult.ImpactPoint.Z;
-        if (WaterDepth < 50.f) return false;  // 최소 수영 가능 깊이 설정
-
-        // 2️⃣ 감지된 액터가 'Water' 태그를 가졌는지 확인
-        AActor* HitActor = HitResult.GetActor();
-        if (HitActor && HitActor->ActorHasTag("Water"))
+        if (MovementMode != MOVE_Swimming)
         {
-            return true;
+            SetMovementMode(MOVE_Swimming);
+            UE_LOG(LogTemp, Warning, TEXT("Swimming Mode Activated (WaterDepth: %f)"), WaterDepth);
         }
+        return true;
+    }
 
-        // 3️⃣ 감지된 표면 머티리얼이 물인지 확인 (추가 보완)
-        UPhysicalMaterial* PhysMat = HitResult.PhysMaterial.Get();
-        if (PhysMat && PhysMat->SurfaceType == EPhysicalSurface::SurfaceType1) // SurfaceType_Water
-        {
-            return true;
-        }
+    // 🎯 물 높이가 허리보다 낮으면 걷기 모드
+    if (MovementMode == MOVE_Swimming)
+    {
+        SetMovementMode(MOVE_Walking);
+        UE_LOG(LogTemp, Warning, TEXT("Walking Mode Activated (WaterDepth: %f)"), WaterDepth);
     }
 
     return false;
 }
+
+
+void UCustomMovementComponent::PhysCustom(float DeltaTime, int32 Iterations)
+{
+    if (MovementMode == MOVE_Swimming)
+    {
+        PerformSwimMovement(DeltaTime);
+    }
+}
+
+void UCustomMovementComponent::PerformSwimMovement(float DeltaTime)
+{
+    if (!CharacterOwner) return;
+
+    // 🎯 입력 벡터 가져오기
+    FVector InputVector = ConsumeInputVector();
+    FVector SwimVelocity = InputVector * SwimSpeed; // 수영 속도 적용
+
+    // 🎯 중력 감소 효과 적용 (부드러운 떠오름)
+    float SwimGravityScale = 0.2f; // 🎯 지역 변수 이름 변경 (GravityScale → SwimGravityScale)
+    SwimVelocity.Z += SwimGravityScale * GetGravityZ() * DeltaTime;
+
+    // 🎯 점프(부상) 및 하강 처리
+    if (CharacterOwner->GetCharacterMovement()->IsFalling())
+    {
+        SwimVelocity.Z += 300.f * DeltaTime; // 캐릭터가 상승할 때 약간의 부력 추가
+    }
+    else if (InputVector.Z < 0)
+    {
+        SwimVelocity.Z -= 200.f * DeltaTime; // 캐릭터가 하강할 때 추가 하강 처리
+    }
+
+    // 🎯 부드러운 이동 적용 (보간 처리)
+    Velocity = FMath::VInterpTo(Velocity, SwimVelocity, DeltaTime, 5.0f);
+
+    // 🎯 실제 위치 업데이트
+    FVector NewLocation = CharacterOwner->GetActorLocation() + (Velocity * DeltaTime);
+    CharacterOwner->SetActorLocation(NewLocation, true);
+}
+
+
 
 #pragma endregion
 
