@@ -192,30 +192,38 @@ void AWarriorCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////
+
 void AWarriorCharacter::OnClimbActionStarted(const FInputActionValue& Value)
 {
-	Debug::Print(TEXT("Climb Action Started"));
-}
+	if (!CustomMovementComponent) return;
 
-void AWarriorCharacter::OnSwimActionStarted(const FInputActionValue& Value)
-{
-	if (CustomMovementComponent)
+	if (!CustomMovementComponent->IsClimbing())
 	{
-		if (CustomMovementComponent->IsSwimming()) // 이미 수영 중이면 해제
-		{
-			CustomMovementComponent->SetMovementMode(MOVE_Walking);
-			Debug::Print(TEXT("Swim Mode Deactivated"));
-		}
-		else if (CustomMovementComponent->CheckSwimmingCondition()) // 물에 있으면 수영 시작
-		{
-			CustomMovementComponent->SetMovementMode(MOVE_Swimming);
-			Debug::Print(TEXT("Swim Mode Activated"));
-		}
+		CustomMovementComponent->ToggleClimbing(true);
+	}
+	else
+	{
+		CustomMovementComponent->ToggleClimbing(false);
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////
 
+void AWarriorCharacter::OnSwimActionStarted(const FInputActionValue& Value)
+{
+	if (CustomMovementComponent && CustomMovementComponent->CheckSwimmingCondition())
+	{
+		CustomMovementComponent->SetMovementMode(MOVE_Swimming);
+		Debug::Print(TEXT("Swim Mode Activated"));
+	}
+	else
+	{
+		Debug::Print(TEXT("No water detected, cannot swim!"));
+	}
+}
 
+//////////////////////////////////////////////////////////////////////////
 
 void AWarriorCharacter::OnFlyActionStarted(const FInputActionValue& Value)
 {
@@ -245,8 +253,6 @@ void AWarriorCharacter::OnFlyActionStarted(const FInputActionValue& Value)
 	LastTapTime = CurrentTime;
 }
 
-
-//////////////////////////////////////////////////////////////////////////
 void AWarriorCharacter::OnJumpActionStarted(const FInputActionValue& Value)
 {
 	if (CustomMovementComponent && CustomMovementComponent->IsFlying())
@@ -285,3 +291,5 @@ void AWarriorCharacter::StopFlying()
 		CustomMovementComponent->SetMovementMode(MOVE_Falling);
 	}
 }
+
+//////////////////////////////////////////////////////////////////////////

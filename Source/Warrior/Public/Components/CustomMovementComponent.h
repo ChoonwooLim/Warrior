@@ -8,6 +8,18 @@
 #include "CustomMovementComponent.generated.h"
 
 
+UENUM()
+namespace ECustomMovementMode
+{
+    enum Type
+    {
+		MOVE_Climb UMETA(DisplayName = "Climb Mode"),
+		MOVE_Flying UMETA(DisplayName = "Fly Mode"),
+		MOVE_Swimming UMETA(DisplayName = "Swim Mode")
+    };
+}
+
+
 /**
  * 
  */
@@ -33,7 +45,7 @@ private:
 
 #pragma region Climb Traces
 
-	TArray<FHitResult> DoCapsuleTraceMultiByObject(const FVector& Start, const FVector& End, bool bShowDebugShape = false );
+	TArray<FHitResult> DoCapsuleTraceMultiByObject(const FVector& Start, const FVector& End, bool bShowDebugShape = false, bool bDrawPersistantShapes = false);
 	/*반환값: TArray<FHitResult>
                 CapsuleTraceMultiForObjects()를 사용하여 충돌된 오브젝트의 정보를 저장하는 배열.
       입력값:
@@ -41,21 +53,28 @@ private:
               End: 캡슐 트레이스 종료 위치.
               bShowDebugShape (기본값 false): 디버그용으로 트레이스 결과를 표시할지 여부.*/
 
-    FHitResult DoLineTraceSingleByObject(const FVector& Start, const FVector& End, bool bShowDebugShape = false);
+    FHitResult DoLineTraceSingleByObject(const FVector& Start, const FVector& End, bool bShowDebugShape = false, bool bDrawPersistantShapes = false);
 
 
 #pragma endregion
 
 #pragma region ClimbCore
 
-    void TraceClimbableSurfaces();
+    bool TraceClimbableSurfaces();
 
-    void TraceFromEyeHeight(float TraceDistance, float TraceStartOffset = 0.f);
+    FHitResult TraceFromEyeHeight(float TraceDistance, float TraceStartOffset = 0.f);
+
+	bool CanStartClimbing();
 
 #pragma endregion
 
+#pragma region ClimbCoreVariables
 
-#pragma region ClimbVariables
+	TArray<FHitResult> ClimbableSurfacesTracedResults;
+
+#pragma endregion
+
+#pragma region ClimbBPVariables
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Climbing", meta = (AllowPrivateAccess = "true"))
 	TArray<TEnumAsByte<EObjectTypeQuery> >ClimbableSurfaceTraceTypes;
@@ -81,25 +100,40 @@ private:
 
 #pragma endregion
 
+public:
+	void ToggleClimbing(bool bEnableClimb);
+	/*입력값: bEnableClimb
+				true: 캐릭터가 벽을 탈 수 있는 상태로 전환.
+				false: 캐릭터가 벽을 탈 수 없는 상태로 전환.
+	  역할: 캐릭터의 벽 타기 상태를 전환하는 함수.
+	  의미: bEnableClimb이 true이면 캐릭터가 벽을 탈 수 있는 상태로 전환되어 벽을 탈 수 있게 됨.
+			  bEnableClimb이 false이면 캐릭터가 벽을 탈 수 없는 상태로 전환되어 벽을 탈 수 없게 됨.*/
+    bool IsClimbing() const;
+
+
 #pragma region Swim Traces
 
 public:
 
-	UFUNCTION(BlueprintCallable, Category = "Character Movement: Swimming")
+    bool IsNearWater();
+
+    UFUNCTION(BlueprintCallable, Category = "Character Movement: Swimming")
 	bool CheckSwimmingCondition();
+
+
 
 
 #pragma endregion
 
 #pragma region Swim Core
 
-#pragma endregion
-
     /** 사용자 정의 물리 처리 함수 */
     virtual void PhysCustom(float DeltaTime, int32 Iterations) override;
 
     /** 수영 모션 처리 */
     void PerformSwimMovement(float DeltaTime);
+
+#pragma endregion
 
 #pragma region Swim Variables
 

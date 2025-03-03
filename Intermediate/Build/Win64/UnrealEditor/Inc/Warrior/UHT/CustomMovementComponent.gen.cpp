@@ -14,7 +14,65 @@ void EmptyLinkFunctionForGeneratedCodeCustomMovementComponent() {}
 	UPackage* Z_Construct_UPackage__Script_Warrior();
 	WARRIOR_API UClass* Z_Construct_UClass_UCustomMovementComponent();
 	WARRIOR_API UClass* Z_Construct_UClass_UCustomMovementComponent_NoRegister();
+	WARRIOR_API UEnum* Z_Construct_UEnum_Warrior_ECustomMovementMode();
 // End Cross Module References
+	static FEnumRegistrationInfo Z_Registration_Info_UEnum_ECustomMovementMode;
+	static UEnum* ECustomMovementMode_StaticEnum()
+	{
+		if (!Z_Registration_Info_UEnum_ECustomMovementMode.OuterSingleton)
+		{
+			Z_Registration_Info_UEnum_ECustomMovementMode.OuterSingleton = GetStaticEnum(Z_Construct_UEnum_Warrior_ECustomMovementMode, (UObject*)Z_Construct_UPackage__Script_Warrior(), TEXT("ECustomMovementMode"));
+		}
+		return Z_Registration_Info_UEnum_ECustomMovementMode.OuterSingleton;
+	}
+	template<> WARRIOR_API UEnum* StaticEnum<ECustomMovementMode::Type>()
+	{
+		return ECustomMovementMode_StaticEnum();
+	}
+	struct Z_Construct_UEnum_Warrior_ECustomMovementMode_Statics
+	{
+		static const UECodeGen_Private::FEnumeratorParam Enumerators[];
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam Enum_MetaDataParams[];
+#endif
+		static const UECodeGen_Private::FEnumParams EnumParams;
+	};
+	const UECodeGen_Private::FEnumeratorParam Z_Construct_UEnum_Warrior_ECustomMovementMode_Statics::Enumerators[] = {
+		{ "ECustomMovementMode::MOVE_Climb", (int64)ECustomMovementMode::MOVE_Climb },
+		{ "ECustomMovementMode::MOVE_Flying", (int64)ECustomMovementMode::MOVE_Flying },
+		{ "ECustomMovementMode::MOVE_Swimming", (int64)ECustomMovementMode::MOVE_Swimming },
+	};
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UEnum_Warrior_ECustomMovementMode_Statics::Enum_MetaDataParams[] = {
+		{ "ModuleRelativePath", "Public/Components/CustomMovementComponent.h" },
+		{ "MOVE_Climb.DisplayName", "Climb Mode" },
+		{ "MOVE_Climb.Name", "ECustomMovementMode::MOVE_Climb" },
+		{ "MOVE_Flying.DisplayName", "Fly Mode" },
+		{ "MOVE_Flying.Name", "ECustomMovementMode::MOVE_Flying" },
+		{ "MOVE_Swimming.DisplayName", "Swim Mode" },
+		{ "MOVE_Swimming.Name", "ECustomMovementMode::MOVE_Swimming" },
+	};
+#endif
+	const UECodeGen_Private::FEnumParams Z_Construct_UEnum_Warrior_ECustomMovementMode_Statics::EnumParams = {
+		(UObject*(*)())Z_Construct_UPackage__Script_Warrior,
+		nullptr,
+		"ECustomMovementMode",
+		"ECustomMovementMode::Type",
+		Z_Construct_UEnum_Warrior_ECustomMovementMode_Statics::Enumerators,
+		RF_Public|RF_Transient|RF_MarkAsNative,
+		UE_ARRAY_COUNT(Z_Construct_UEnum_Warrior_ECustomMovementMode_Statics::Enumerators),
+		EEnumFlags::None,
+		(uint8)UEnum::ECppForm::Namespaced,
+		METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UEnum_Warrior_ECustomMovementMode_Statics::Enum_MetaDataParams), Z_Construct_UEnum_Warrior_ECustomMovementMode_Statics::Enum_MetaDataParams)
+	};
+	UEnum* Z_Construct_UEnum_Warrior_ECustomMovementMode()
+	{
+		if (!Z_Registration_Info_UEnum_ECustomMovementMode.InnerSingleton)
+		{
+			UECodeGen_Private::ConstructUEnum(Z_Registration_Info_UEnum_ECustomMovementMode.InnerSingleton, Z_Construct_UEnum_Warrior_ECustomMovementMode_Statics::EnumParams);
+		}
+		return Z_Registration_Info_UEnum_ECustomMovementMode.InnerSingleton;
+	}
 	DEFINE_FUNCTION(UCustomMovementComponent::execCheckObstacleAhead)
 	{
 		P_FINISH;
@@ -506,13 +564,17 @@ void EmptyLinkFunctionForGeneratedCodeCustomMovementComponent() {}
 	UCustomMovementComponent::~UCustomMovementComponent() {}
 	struct Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_Statics
 	{
+		static const FEnumRegisterCompiledInInfo EnumInfo[];
 		static const FClassRegisterCompiledInInfo ClassInfo[];
+	};
+	const FEnumRegisterCompiledInInfo Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_Statics::EnumInfo[] = {
+		{ ECustomMovementMode_StaticEnum, TEXT("ECustomMovementMode"), &Z_Registration_Info_UEnum_ECustomMovementMode, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 3628575945U) },
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_Statics::ClassInfo[] = {
 		{ Z_Construct_UClass_UCustomMovementComponent, UCustomMovementComponent::StaticClass, TEXT("UCustomMovementComponent"), &Z_Registration_Info_UClass_UCustomMovementComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UCustomMovementComponent), 100774675U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_129722226(TEXT("/Script/Warrior"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_2335072703(TEXT("/Script/Warrior"),
 		Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_Statics::ClassInfo),
 		nullptr, 0,
-		nullptr, 0);
+		Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_Statics::EnumInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_Statics::EnumInfo));
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
