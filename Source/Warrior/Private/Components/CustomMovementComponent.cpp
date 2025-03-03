@@ -5,8 +5,10 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/Character.h"
 #include "Warrior/WarriorCharacter.h"
-#include "Warrior/DebugHelper.h"
 #include "Components/CapsuleComponent.h"
+
+#include "Warrior/DebugHelper.h"
+
 
 
 void UCustomMovementComponent::SetUpdatedComponent(USceneComponent* NewUpdatedComponent)
@@ -29,6 +31,25 @@ void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
     /*TraceClimbableSurfaces();
        TraceFromEyeHeight(100.f); */
 
+}
+
+void UCustomMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode)
+{
+    if (IsClimbing())
+    {
+        bOrientRotationToMovement = false;
+		CharacterOwner->GetCapsuleComponent()->SetCapsuleHalfHeight(48.f);
+	}
+
+    if (PreviousMovementMode == MOVE_Custom && PreviousCustomMode == ECustomMovementMode::MOVE_Climb)
+    {
+        bOrientRotationToMovement = true;
+        CharacterOwner->GetCapsuleComponent()->SetCapsuleHalfHeight(96.f);
+
+		StopMovementImmediately();
+    }
+	Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
+	
 }
 
 
@@ -124,8 +145,8 @@ void UCustomMovementComponent::ToggleClimbing(bool bEnableClimb)
         if (CanStartClimbing())
         {
             //Enter the climb state
-
             Debug::Print(TEXT("Climb Mode Activated"));
+            StartClimbing();
         }
         else
         {
@@ -136,7 +157,7 @@ void UCustomMovementComponent::ToggleClimbing(bool bEnableClimb)
 	else
 	{
 		// Stop climbing
-        
+        StopClimbing();
        
 	}
 }
@@ -149,6 +170,16 @@ bool UCustomMovementComponent::CanStartClimbing()
 
 	return true;
    
+}
+
+void UCustomMovementComponent::StartClimbing()
+{
+	SetMovementMode(MOVE_Custom, ECustomMovementMode::MOVE_Climb);
+}
+
+void UCustomMovementComponent::StopClimbing()
+{
+	SetMovementMode(MOVE_Falling);
 }
 
 bool UCustomMovementComponent::IsClimbing() const
