@@ -144,24 +144,10 @@ void UCustomMovementComponent::PhysSwimming(float deltaTime, int32 Iterations)
 
     RestorePreAdditiveRootMotionVelocity();
 
-    float NetFluidFriction = 0.f;
     float Depth = ImmersionDepth();
     float NetBuoyancy = Buoyancy * Depth;
     float OriginalAccelZ = Acceleration.Z;
     bool bLimitedUpAccel = false;
-
-    APhysicsVolume* PhysicsVolume = CharacterOwner->GetPhysicsVolume();
-    if (!PhysicsVolume)
-    {
-        Debug::Print(TEXT("Physics Volume Not Found! Using Default"), FColor::Yellow);
-        PhysicsVolume = GetWorld()->GetDefaultPhysicsVolume(); // 기본 물리 볼륨 사용
-    }
-
-    if (!PhysicsVolume)
-    {
-        Debug::Print(TEXT("PhysSwimming Failed: No Valid Physics Volume Found!"), FColor::Red);
-        return;
-    }
 
     if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity() && (Velocity.Z > 0.33f * MaxSwimSpeed) && (NetBuoyancy != 0.f))
     {
@@ -179,7 +165,6 @@ void UCustomMovementComponent::PhysSwimming(float deltaTime, int32 Iterations)
 
     if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
     {
-        /*const float Friction = 0.5f * PhysicsVolume->FluidFriction * Depth;  // 기존 `GetPhysicsVolume()` 대신 수정된 코드? */
         CalcVelocity(deltaTime, 0.5f, true, GetMaxBrakingDeceleration());
         Velocity.Z += GetGravityZ() * deltaTime * (1.f - NetBuoyancy);
     }
@@ -212,14 +197,9 @@ void UCustomMovementComponent::PhysSwimming(float deltaTime, int32 Iterations)
         }
     }
 
-    if (PhysicsVolume && /*!PhysicsVolume->bWaterVolume &&*/ IsSwimming())
+    if (IsSwimming() && !TraceSwimmableSurfaces())
     {
         SetMovementMode(MOVE_Falling);
-    }
-
-    if (!IsSwimming())
-    {
-        StartNewPhysics(remainingTime, Iterations);
     }
 }
 
@@ -504,8 +484,6 @@ bool UCustomMovementComponent::GetShouldStopClimbing()
     return false;
 }
 
-
-
 FQuat UCustomMovementComponent::GetClimbRotation(float DeltaTime)
 {
     const FQuat CurrentQuat = UpdatedComponent->GetComponentQuat();
@@ -536,13 +514,10 @@ void UCustomMovementComponent::SnapMovementToClimbableSurfaces(float DeltaTime)
         true);
 }
 
-
-
 bool UCustomMovementComponent::IsClimbing() const
 {
 	return MovementMode == MOVE_Custom && CustomMovementMode == ECustomMovementMode::MOVE_Climb;
 }
-
 
 //Trace for climbable surfaces, return ture if there are indeed valid surfaces, false otherwise.
 bool UCustomMovementComponent::TraceClimbableSurfaces()
@@ -576,32 +551,44 @@ void UCustomMovementComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedCom
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
     bool bFromSweep, const FHitResult& SweepResult)
 {
-    if (OtherComp && OtherComp->GetCollisionObjectType() == ECC_GameTraceChannel1)  // ECC_Water 충돌 감지
+    if (!OtherComp || !CharacterOwner) return;
+
+    // 충돌한 오브젝트가 물인지 확인
+    if (OtherComp->GetCollisionObjectType() == ECC_GameTraceChannel1)
     {
-        //Debug::Print(TEXT("Entered Water - Attempting to Enter Swim Mode"), FColor::Blue);
-     
-        if (!IsSwimming() && !bHasEnteredWater)
+        // 캐릭터의 현재 위치
+        FVector CharacterLocation = CharacterOwner->GetActorLocation();
+
+        // 캐릭터의 가슴 높이 (BaseEyeHeight보다 조금 낮게 설정)
+        float ChestHeightOffset = CharacterOwner->BaseEyeHeight * 0.6f;
+        FVector ChestLocation = CharacterLocation + FVector(0.f, 0.f, ChestHeightOffset);
+
+        // 가슴 높이보다 물이 높은지 확인
+        if (SweepResult.ImpactPoint.Z >= ChestLocation.Z)
         {
-            bHasEnteredWater = true;  // 물에 들어갔다는 플래그 설정
-            GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UCustomMovementComponent::StartSwimming);
+            if (!IsSwimming())
+            {
+                Debug::Print(TEXT("Entered Water - Activating Swim Mode"), FColor::Blue);
+                StartSwimming();
+            }
         }
     }
 }
 
 
+
 void UCustomMovementComponent::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-    if (OtherComp && OtherComp->GetCollisionObjectType() == ECC_GameTraceChannel1)  // ECC_Water 충돌 감지
-    {
-       // Debug::Print(TEXT("Exited Water - Attempting to Exit Swim Mode"), FColor::Yellow);
+    if (!OtherComp) return;
 
-        if (IsSwimming())
+    if (OtherComp->GetCollisionObjectType() == ECC_GameTraceChannel1)  // ECC_Water 충돌 감지
+    {
+        if (IsSwimming() && !TraceSwimmableSurfaces())
         {
+            Debug::Print(TEXT("Exited Water - Deactivating Swim Mode"), FColor::Yellow);
             StopSwimming();
         }
-
-        bHasEnteredWater = false;  // 물에서 나오면 다시 수영 가능하도록 초기화
     }
 }
 
@@ -655,11 +642,7 @@ FHitResult UCustomMovementComponent::TraceWaterSurface(float TraceDistance, floa
    
 void UCustomMovementComponent::ToggleSwimming(bool bEnableSwim)
 {
-    if (!CharacterOwner)
-    {
-        Debug::Print(TEXT("ToggleSwimming Failed: CharacterOwner is NULL"), FColor::Red);
-        return;
-    }
+    if (!CharacterOwner) return;
 
     if (bEnableSwim)
     {
@@ -668,10 +651,6 @@ void UCustomMovementComponent::ToggleSwimming(bool bEnableSwim)
             Debug::Print(TEXT("Swim Mode Activated"), FColor::Green);
             StartSwimming();
         }
-        else
-        {
-            Debug::Print(TEXT("Swim Mode Activation Failed"), FColor::Red);
-        }
     }
     else
     {
@@ -679,7 +658,6 @@ void UCustomMovementComponent::ToggleSwimming(bool bEnableSwim)
         StopSwimming();
     }
 }
-
 
 bool UCustomMovementComponent::CanStartSwimming()
 {
@@ -733,7 +711,6 @@ bool UCustomMovementComponent::IsSwimming() const
 {
 	return MovementMode == MOVE_Custom && CustomMovementMode == ECustomMovementMode::MOVE_Swimming;
 }
-
 
 #pragma endregion
 
