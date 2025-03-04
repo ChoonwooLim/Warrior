@@ -120,17 +120,28 @@ public:
 #pragma region Swim Traces
 
 public:
-
+    bool TraceSwimmableSurfaces();
+    FHitResult TraceWaterSurface(float TraceDistance, float TraceStartOffset = 0.f);
     
 
 #pragma endregion
 
 #pragma region Swim Core
 
+public:
+    void ToggleSwimming(bool bEnableSwim);
+    bool CanStartSwimming();
+    void StartSwimming();
+    void StopSwimming();
+    bool IsSwimming() const;
+
    
 #pragma endregion
 
-#pragma region Swim Variables
+#pragma region Swim Core Variables
+
+private:
+	TArray<FHitResult> SwimmableSurfacesTracedResults;
 
 #pragma endregion
 

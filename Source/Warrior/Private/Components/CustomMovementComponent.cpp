@@ -48,6 +48,21 @@ void UCustomMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovem
 
 		StopMovementImmediately();
     }
+
+    if (IsSwimming())
+    {
+        bOrientRotationToMovement = false;
+        CharacterOwner->GetCapsuleComponent()->SetCapsuleHalfHeight(60.f); // 물 속에서는 충돌 크기 감소
+    }
+
+    if (PreviousMovementMode == MOVE_Custom && PreviousCustomMode == ECustomMovementMode::MOVE_Swimming)
+    {
+        bOrientRotationToMovement = true;
+        CharacterOwner->GetCapsuleComponent()->SetCapsuleHalfHeight(96.f);
+
+        StopMovementImmediately();
+    }
+
 	Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
 	
 }
@@ -216,6 +231,78 @@ FHitResult UCustomMovementComponent::TraceFromEyeHeight(float TraceDistance, flo
 
 #pragma region Swim Traces
 
+bool UCustomMovementComponent::TraceSwimmableSurfaces()
+{
+    const FVector StartOffset = FVector(0.f, 0.f, -30.f); // 약간 아래로 탐색
+    const FVector Start = UpdatedComponent->GetComponentLocation() + StartOffset;
+    const FVector End = Start - FVector(0.f, 0.f, 50.f); // 아래 방향으로 탐색
+
+    SwimmableSurfacesTracedResults = DoCapsuleTraceMultiByObject(Start, End, true, true);
+
+    return !SwimmableSurfacesTracedResults.IsEmpty();
+}
+
+FHitResult UCustomMovementComponent::TraceWaterSurface(float TraceDistance, float TraceStartOffset)
+{
+    const FVector ComponentLocation = UpdatedComponent->GetComponentLocation();
+    const FVector EyeHeightOffset = FVector(0.f, 0.f, CharacterOwner->BaseEyeHeight + TraceStartOffset);
+
+    const FVector Start = ComponentLocation + EyeHeightOffset;
+    const FVector End = Start - FVector(0.f, 0.f, TraceDistance);
+
+    return DoLineTraceSingleByObject(Start, End, true, true);
+}
+
+
+#pragma endregion
+
+#pragma region Swim Core
+   
+void UCustomMovementComponent::ToggleSwimming(bool bEnableSwim)
+{
+    if (!CharacterOwner) return;
+
+    if (bEnableSwim)
+    {
+        if (CanStartSwimming())
+        {
+            Debug::Print(TEXT("Swim Mode Activated"));
+            StartSwimming();
+        }
+        else
+        {
+            Debug::Print(TEXT("Swim Mode Failed"));
+        }
+    }
+    else
+    {
+        StopSwimming();
+    }
+}
+
+bool UCustomMovementComponent::CanStartSwimming()
+{
+    if (IsFalling()) return false;
+    if (!TraceSwimmableSurfaces()) return false;
+    if (!TraceWaterSurface(100.f).bBlockingHit) return false;
+
+    return true;
+}
+
+void UCustomMovementComponent::StartSwimming()
+{
+    SetMovementMode(MOVE_Custom, ECustomMovementMode::MOVE_Swimming);
+}
+
+void UCustomMovementComponent::StopSwimming()
+{
+    SetMovementMode(MOVE_Walking);
+}
+
+bool UCustomMovementComponent::IsSwimming() const
+{
+    return MovementMode == MOVE_Custom && CustomMovementMode == ECustomMovementMode::MOVE_Swimming;
+}
 
 #pragma endregion
 

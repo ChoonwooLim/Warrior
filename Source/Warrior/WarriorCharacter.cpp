@@ -212,6 +212,16 @@ void AWarriorCharacter::OnClimbActionStarted(const FInputActionValue& Value)
 
 void AWarriorCharacter::OnSwimActionStarted(const FInputActionValue& Value)
 {
+	if (!CustomMovementComponent) return;
+
+	if (!CustomMovementComponent->IsSwimming())
+	{
+		CustomMovementComponent->ToggleSwimming(true);
+	}
+	else
+	{
+		CustomMovementComponent->ToggleSwimming(false);
+	}
 	
 }
 
