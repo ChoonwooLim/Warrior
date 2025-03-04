@@ -212,15 +212,7 @@ void AWarriorCharacter::OnClimbActionStarted(const FInputActionValue& Value)
 
 void AWarriorCharacter::OnSwimActionStarted(const FInputActionValue& Value)
 {
-	if (CustomMovementComponent && CustomMovementComponent->CheckSwimmingCondition())
-	{
-		CustomMovementComponent->SetMovementMode(MOVE_Swimming);
-		Debug::Print(TEXT("Swim Mode Activated"));
-	}
-	else
-	{
-		Debug::Print(TEXT("No water detected, cannot swim!"));
-	}
+	
 }
 
 //////////////////////////////////////////////////////////////////////////

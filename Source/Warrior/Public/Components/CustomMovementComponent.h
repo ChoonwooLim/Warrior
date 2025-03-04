@@ -121,38 +121,16 @@ public:
 
 public:
 
-    bool IsNearWater();
-
-    UFUNCTION(BlueprintCallable, Category = "Character Movement: Swimming")
-	bool CheckSwimmingCondition();
-
-
-
+    
 
 #pragma endregion
 
 #pragma region Swim Core
 
-    /** 사용자 정의 물리 처리 함수 */
-    virtual void PhysCustom(float DeltaTime, int32 Iterations) override;
-
-    /** 수영 모션 처리 */
-    void PerformSwimMovement(float DeltaTime);
-
+   
 #pragma endregion
 
 #pragma region Swim Variables
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Swimming", meta = (AllowPrivateAccess = "true"))
-	float SwimTraceRadius = 50.f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Swimming", meta = (AllowPrivateAccess = "true"))
-	float SwimTraceDepth = 60.f;
-  
-
-    /** 수영 속도 */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Swimming")
-    float SwimSpeed = 300.0f;  // 기본 수영 속도
 
 #pragma endregion
 

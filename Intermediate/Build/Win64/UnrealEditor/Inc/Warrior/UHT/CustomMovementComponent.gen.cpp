@@ -101,20 +101,12 @@ void EmptyLinkFunctionForGeneratedCodeCustomMovementComponent() {}
 		*(bool*)Z_Param__Result=P_THIS->CheckFlightCondition();
 		P_NATIVE_END;
 	}
-	DEFINE_FUNCTION(UCustomMovementComponent::execCheckSwimmingCondition)
-	{
-		P_FINISH;
-		P_NATIVE_BEGIN;
-		*(bool*)Z_Param__Result=P_THIS->CheckSwimmingCondition();
-		P_NATIVE_END;
-	}
 	void UCustomMovementComponent::StaticRegisterNativesUCustomMovementComponent()
 	{
 		UClass* Class = UCustomMovementComponent::StaticClass();
 		static const FNameNativePtrPair Funcs[] = {
 			{ "CheckFlightCondition", &UCustomMovementComponent::execCheckFlightCondition },
 			{ "CheckObstacleAhead", &UCustomMovementComponent::execCheckObstacleAhead },
-			{ "CheckSwimmingCondition", &UCustomMovementComponent::execCheckSwimmingCondition },
 			{ "IsCeilingAbove", &UCustomMovementComponent::execIsCeilingAbove },
 			{ "IsGroundBelow", &UCustomMovementComponent::execIsGroundBelow },
 		};
@@ -197,46 +189,6 @@ void EmptyLinkFunctionForGeneratedCodeCustomMovementComponent() {}
 		if (!ReturnFunction)
 		{
 			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_UCustomMovementComponent_CheckObstacleAhead_Statics::FuncParams);
-		}
-		return ReturnFunction;
-	}
-	struct Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics
-	{
-		struct CustomMovementComponent_eventCheckSwimmingCondition_Parms
-		{
-			bool ReturnValue;
-		};
-		static void NewProp_ReturnValue_SetBit(void* Obj);
-		static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
-		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
-#if WITH_METADATA
-		static const UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[];
-#endif
-		static const UECodeGen_Private::FFunctionParams FuncParams;
-	};
-	void Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics::NewProp_ReturnValue_SetBit(void* Obj)
-	{
-		((CustomMovementComponent_eventCheckSwimmingCondition_Parms*)Obj)->ReturnValue = 1;
-	}
-	const UECodeGen_Private::FBoolPropertyParams Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, sizeof(bool), sizeof(CustomMovementComponent_eventCheckSwimmingCondition_Parms), &Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics::NewProp_ReturnValue_SetBit, METADATA_PARAMS(0, nullptr) };
-	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics::PropPointers[] = {
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics::NewProp_ReturnValue,
-	};
-#if WITH_METADATA
-	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics::Function_MetaDataParams[] = {
-		{ "Category", "Character Movement: Swimming" },
-		{ "ModuleRelativePath", "Public/Components/CustomMovementComponent.h" },
-	};
-#endif
-	const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics::FuncParams = { (UObject*(*)())Z_Construct_UClass_UCustomMovementComponent, nullptr, "CheckSwimmingCondition", nullptr, nullptr, Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics::PropPointers, UE_ARRAY_COUNT(Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics::PropPointers), sizeof(Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics::CustomMovementComponent_eventCheckSwimmingCondition_Parms), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics::Function_MetaDataParams), Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics::Function_MetaDataParams) };
-	static_assert(UE_ARRAY_COUNT(Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics::PropPointers) < 2048);
-	static_assert(sizeof(Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics::CustomMovementComponent_eventCheckSwimmingCondition_Parms) < MAX_uint16);
-	UFunction* Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition()
-	{
-		static UFunction* ReturnFunction = nullptr;
-		if (!ReturnFunction)
-		{
-			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition_Statics::FuncParams);
 		}
 		return ReturnFunction;
 	}
@@ -346,18 +298,6 @@ void EmptyLinkFunctionForGeneratedCodeCustomMovementComponent() {}
 #endif
 		static const UECodeGen_Private::FFloatPropertyParams NewProp_ClimbCapsuleTraceHalfHeight;
 #if WITH_METADATA
-		static const UECodeGen_Private::FMetaDataPairParam NewProp_SwimTraceRadius_MetaData[];
-#endif
-		static const UECodeGen_Private::FFloatPropertyParams NewProp_SwimTraceRadius;
-#if WITH_METADATA
-		static const UECodeGen_Private::FMetaDataPairParam NewProp_SwimTraceDepth_MetaData[];
-#endif
-		static const UECodeGen_Private::FFloatPropertyParams NewProp_SwimTraceDepth;
-#if WITH_METADATA
-		static const UECodeGen_Private::FMetaDataPairParam NewProp_SwimSpeed_MetaData[];
-#endif
-		static const UECodeGen_Private::FFloatPropertyParams NewProp_SwimSpeed;
-#if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_FlightTraceDistance_MetaData[];
 #endif
 		static const UECodeGen_Private::FFloatPropertyParams NewProp_FlightTraceDistance;
@@ -385,7 +325,6 @@ void EmptyLinkFunctionForGeneratedCodeCustomMovementComponent() {}
 	const FClassFunctionLinkInfo Z_Construct_UClass_UCustomMovementComponent_Statics::FuncInfo[] = {
 		{ &Z_Construct_UFunction_UCustomMovementComponent_CheckFlightCondition, "CheckFlightCondition" }, // 3492110002
 		{ &Z_Construct_UFunction_UCustomMovementComponent_CheckObstacleAhead, "CheckObstacleAhead" }, // 1231577013
-		{ &Z_Construct_UFunction_UCustomMovementComponent_CheckSwimmingCondition, "CheckSwimmingCondition" }, // 1097079365
 		{ &Z_Construct_UFunction_UCustomMovementComponent_IsCeilingAbove, "IsCeilingAbove" }, // 1414038408
 		{ &Z_Construct_UFunction_UCustomMovementComponent_IsGroundBelow, "IsGroundBelow" }, // 3184024585
 	};
@@ -436,35 +375,6 @@ void EmptyLinkFunctionForGeneratedCodeCustomMovementComponent() {}
 	};
 #endif
 	const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_ClimbCapsuleTraceHalfHeight = { "ClimbCapsuleTraceHalfHeight", nullptr, (EPropertyFlags)0x0040000000010015, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(UCustomMovementComponent, ClimbCapsuleTraceHalfHeight), METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_ClimbCapsuleTraceHalfHeight_MetaData), Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_ClimbCapsuleTraceHalfHeight_MetaData) };
-#if WITH_METADATA
-	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_SwimTraceRadius_MetaData[] = {
-		{ "AllowPrivateAccess", "true" },
-		{ "Category", "Character Movement: Swimming" },
-		{ "ModuleRelativePath", "Public/Components/CustomMovementComponent.h" },
-	};
-#endif
-	const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_SwimTraceRadius = { "SwimTraceRadius", nullptr, (EPropertyFlags)0x0010000000010015, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(UCustomMovementComponent, SwimTraceRadius), METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_SwimTraceRadius_MetaData), Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_SwimTraceRadius_MetaData) };
-#if WITH_METADATA
-	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_SwimTraceDepth_MetaData[] = {
-		{ "AllowPrivateAccess", "true" },
-		{ "Category", "Character Movement: Swimming" },
-		{ "ModuleRelativePath", "Public/Components/CustomMovementComponent.h" },
-	};
-#endif
-	const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_SwimTraceDepth = { "SwimTraceDepth", nullptr, (EPropertyFlags)0x0010000000010015, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(UCustomMovementComponent, SwimTraceDepth), METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_SwimTraceDepth_MetaData), Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_SwimTraceDepth_MetaData) };
-#if WITH_METADATA
-	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_SwimSpeed_MetaData[] = {
-		{ "Category", "Swimming" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** \xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd \xef\xbf\xbd\xd3\xb5\xef\xbf\xbd */" },
-#endif
-		{ "ModuleRelativePath", "Public/Components/CustomMovementComponent.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd \xef\xbf\xbd\xd3\xb5\xef\xbf\xbd" },
-#endif
-	};
-#endif
-	const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_SwimSpeed = { "SwimSpeed", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(UCustomMovementComponent, SwimSpeed), METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_SwimSpeed_MetaData), Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_SwimSpeed_MetaData) };
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_FlightTraceDistance_MetaData[] = {
 		{ "AllowPrivateAccess", "true" },
@@ -520,9 +430,6 @@ void EmptyLinkFunctionForGeneratedCodeCustomMovementComponent() {}
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_ClimbableSurfaceTraceTypes,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_ClimbCapsuleTraceRadius,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_ClimbCapsuleTraceHalfHeight,
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_SwimTraceRadius,
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_SwimTraceDepth,
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_SwimSpeed,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_FlightTraceDistance,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_CeilingTraceDistance,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UCustomMovementComponent_Statics::NewProp_GroundTraceDistance,
@@ -571,9 +478,9 @@ void EmptyLinkFunctionForGeneratedCodeCustomMovementComponent() {}
 		{ ECustomMovementMode_StaticEnum, TEXT("ECustomMovementMode"), &Z_Registration_Info_UEnum_ECustomMovementMode, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 3628575945U) },
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UCustomMovementComponent, UCustomMovementComponent::StaticClass, TEXT("UCustomMovementComponent"), &Z_Registration_Info_UClass_UCustomMovementComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UCustomMovementComponent), 100774675U) },
+		{ Z_Construct_UClass_UCustomMovementComponent, UCustomMovementComponent::StaticClass, TEXT("UCustomMovementComponent"), &Z_Registration_Info_UClass_UCustomMovementComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UCustomMovementComponent), 3334399334U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_2335072703(TEXT("/Script/Warrior"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_2727914224(TEXT("/Script/Warrior"),
 		Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_Statics::ClassInfo),
 		nullptr, 0,
 		Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_Statics::EnumInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_Statics::EnumInfo));

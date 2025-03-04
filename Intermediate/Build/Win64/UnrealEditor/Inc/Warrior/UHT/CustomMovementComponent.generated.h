@@ -22,8 +22,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 	DECLARE_FUNCTION(execCheckObstacleAhead); \
 	DECLARE_FUNCTION(execIsGroundBelow); \
 	DECLARE_FUNCTION(execIsCeilingAbove); \
-	DECLARE_FUNCTION(execCheckFlightCondition); \
-	DECLARE_FUNCTION(execCheckSwimmingCondition);
+	DECLARE_FUNCTION(execCheckFlightCondition);
 
 
 #define FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_30_ACCESSORS
