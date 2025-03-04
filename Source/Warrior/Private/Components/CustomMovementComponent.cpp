@@ -33,49 +33,11 @@ void UCustomMovementComponent::SetUpdatedComponent(USceneComponent* NewUpdatedCo
     }
 }
 
+#pragma region Debug PhySwiming
+
+#pragma endregion
+
 #pragma region OverridenFunctions
-
-void UCustomMovementComponent::DebugPhysicsVolume()
-{
-    if (!CharacterOwner)
-    {
-        Debug::Print(TEXT("DebugPhysicsVolume: CharacterOwner is NULL"), FColor::Red);
-        return;
-    }
-
-    APhysicsVolume* PhysicsVolume = CharacterOwner ? CharacterOwner->GetPhysicsVolume() : nullptr;
-
-    if (!PhysicsVolume)
-    {
-        Debug::Print(TEXT("Physics Volume Not Found! Using Default"), FColor::Yellow);
-        PhysicsVolume = GetWorld() ? GetWorld()->GetDefaultPhysicsVolume() : nullptr;
-    }
-
-    if (!PhysicsVolume)
-    {
-        Debug::Print(TEXT("PhysSwimming Failed: No Valid Physics Volume Found!"), FColor::Red);
-        return;
-    }
-
-
-   /* if (PhysicsVolume)
-    {
-        FString VolumeName = PhysicsVolume ? PhysicsVolume->GetName() : TEXT("Unknown");
-        FString WaterStatus = PhysicsVolume->bWaterVolume ? TEXT("True") : TEXT("False");
-
-        FString VolumeInfo = FString::Printf(TEXT("Physics Volume: %s, Is Water: %s"),
-            *VolumeName,
-            *WaterStatus);
-
-        Debug::Print(*VolumeInfo, FColor::Green);
-    }
-    else
-    {
-        Debug::Print(TEXT("DebugPhysicsVolume: No Valid Physics Volume Found"), FColor::Red);
-    }*/
-
-}
-
 
 void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -134,9 +96,7 @@ void UCustomMovementComponent::PhysCustom(float deltaTime, int32 Iterations)
 
 void UCustomMovementComponent::PhysSwimming(float deltaTime, int32 Iterations)
 {
-    DebugPhysicsVolume();  // 추가된 디버그 함수 호출
-
-    if (!CharacterOwner)
+      if (!CharacterOwner)
     {
         Debug::Print(TEXT("PhysSwimming Failed: CharacterOwner is NULL"), FColor::Red);
         return;
@@ -188,12 +148,12 @@ void UCustomMovementComponent::PhysSwimming(float deltaTime, int32 Iterations)
     FVector OldLocation = UpdatedComponent->GetComponentLocation();
     bJustTeleported = false;
 
-    /*if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+    if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
     {
-        const float Friction = 0.5f * PhysicsVolume->FluidFriction * Depth;  // 기존 `GetPhysicsVolume()` 대신 수정된 코드
-        CalcVelocity(deltaTime, Friction, true, GetMaxBrakingDeceleration());
+        /*const float Friction = 0.5f * PhysicsVolume->FluidFriction * Depth;  // 기존 `GetPhysicsVolume()` 대신 수정된 코드? */
+        CalcVelocity(deltaTime, 0.5f, true, GetMaxBrakingDeceleration());
         Velocity.Z += GetGravityZ() * deltaTime * (1.f - NetBuoyancy);
-    }*/
+    }
 
     ApplyRootMotionToVelocity(deltaTime);
 
@@ -223,10 +183,10 @@ void UCustomMovementComponent::PhysSwimming(float deltaTime, int32 Iterations)
         }
     }
 
-   /* if (!GetPhysicsVolume()->bWaterVolume && IsSwimming())
+    if (PhysicsVolume && /*!PhysicsVolume->bWaterVolume &&*/ IsSwimming())
     {
         SetMovementMode(MOVE_Falling);
-    }*/
+    }
 
     if (!IsSwimming())
     {
@@ -536,7 +496,7 @@ void UCustomMovementComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedCom
     if (OtherComp && OtherComp->GetCollisionObjectType() == ECC_GameTraceChannel1)  // ECC_Water 충돌 감지
     {
         //Debug::Print(TEXT("Entered Water - Attempting to Enter Swim Mode"), FColor::Blue);
-
+     
         if (!IsSwimming() && !bHasEnteredWater)
         {
             bHasEnteredWater = true;  // 물에 들어갔다는 플래그 설정

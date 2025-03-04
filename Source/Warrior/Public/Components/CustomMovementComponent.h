@@ -34,7 +34,7 @@ class WARRIOR_API UCustomMovementComponent : public UCharacterMovementComponent
 #pragma region OverridenFunctions
 
 protected:
-    void DebugPhysicsVolume();
+
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
     virtual void OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode) override;
     virtual void PhysCustom(float deltaTime, int32 Iterations) override;
