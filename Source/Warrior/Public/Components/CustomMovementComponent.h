@@ -29,10 +29,21 @@ class WARRIOR_API UCustomMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
 
+
+
+#pragma region OverridenFunctions
+
 protected:
+    void DebugPhysicsVolume();
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
     virtual void OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode) override;
+    virtual void PhysCustom(float deltaTime, int32 Iterations) override;
+    virtual void PhysSwimming(float deltaTime, int32 Iterations);
+    virtual void PhysFlying(float deltaTime, int32 Iterations);
 
+#pragma endregion
+
+    
 private:
 
 	void SetUpdatedComponent(USceneComponent* NewUpdatedComponent);
@@ -71,6 +82,8 @@ private:
 
 	void StopClimbing();
 
+    void PhysClimb(float deltaTime, int32 Iterations);
+
 
 #pragma endregion
 
@@ -102,6 +115,9 @@ private:
               반 높이(HalfHeight) 값이므로 캡슐의 전체 높이는 144cm가 됨.
       의미: 캐릭터의 충돌 캡슐 크기와 비슷하게 설정되어 있을 가능성이 높음.
               ClimbCapsuleTraceRadius와 함께 조정하면 벽 감지 범위를 조절할 수 있음. */
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Climbing", meta = (AllowPrivateAccess = "true"))
+    float MaxBreakClimbDeceleration = 400.f;
 
 
 #pragma endregion

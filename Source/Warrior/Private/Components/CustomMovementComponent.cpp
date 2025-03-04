@@ -33,6 +33,50 @@ void UCustomMovementComponent::SetUpdatedComponent(USceneComponent* NewUpdatedCo
     }
 }
 
+#pragma region OverridenFunctions
+
+void UCustomMovementComponent::DebugPhysicsVolume()
+{
+    if (!CharacterOwner)
+    {
+        Debug::Print(TEXT("DebugPhysicsVolume: CharacterOwner is NULL"), FColor::Red);
+        return;
+    }
+
+    APhysicsVolume* PhysicsVolume = CharacterOwner ? CharacterOwner->GetPhysicsVolume() : nullptr;
+
+    if (!PhysicsVolume)
+    {
+        Debug::Print(TEXT("Physics Volume Not Found! Using Default"), FColor::Yellow);
+        PhysicsVolume = GetWorld() ? GetWorld()->GetDefaultPhysicsVolume() : nullptr;
+    }
+
+    if (!PhysicsVolume)
+    {
+        Debug::Print(TEXT("PhysSwimming Failed: No Valid Physics Volume Found!"), FColor::Red);
+        return;
+    }
+
+
+   /* if (PhysicsVolume)
+    {
+        FString VolumeName = PhysicsVolume ? PhysicsVolume->GetName() : TEXT("Unknown");
+        FString WaterStatus = PhysicsVolume->bWaterVolume ? TEXT("True") : TEXT("False");
+
+        FString VolumeInfo = FString::Printf(TEXT("Physics Volume: %s, Is Water: %s"),
+            *VolumeName,
+            *WaterStatus);
+
+        Debug::Print(*VolumeInfo, FColor::Green);
+    }
+    else
+    {
+        Debug::Print(TEXT("DebugPhysicsVolume: No Valid Physics Volume Found"), FColor::Red);
+    }*/
+
+}
+
+
 void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -75,6 +119,184 @@ void UCustomMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovem
 	Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
 	
 }
+
+void UCustomMovementComponent::PhysCustom(float deltaTime, int32 Iterations)
+{
+    if (IsClimbing())
+    {
+        PhysClimb(deltaTime, Iterations);
+        
+    }
+
+    Super::PhysCustom(deltaTime, Iterations);
+
+}
+
+void UCustomMovementComponent::PhysSwimming(float deltaTime, int32 Iterations)
+{
+    DebugPhysicsVolume();  // 추가된 디버그 함수 호출
+
+    if (!CharacterOwner)
+    {
+        Debug::Print(TEXT("PhysSwimming Failed: CharacterOwner is NULL"), FColor::Red);
+        return;
+    }
+
+    if (!IsSwimming())
+    {
+        Debug::Print(TEXT("PhysSwimming Failed: Not in Swim Mode"), FColor::Red);
+        return;
+    }
+
+    if (deltaTime < MIN_TICK_TIME)
+    {
+        return;
+    }
+
+    RestorePreAdditiveRootMotionVelocity();
+
+    float NetFluidFriction = 0.f;
+    float Depth = ImmersionDepth();
+    float NetBuoyancy = Buoyancy * Depth;
+    float OriginalAccelZ = Acceleration.Z;
+    bool bLimitedUpAccel = false;
+
+    APhysicsVolume* PhysicsVolume = CharacterOwner->GetPhysicsVolume();
+    if (!PhysicsVolume)
+    {
+        Debug::Print(TEXT("Physics Volume Not Found! Using Default"), FColor::Yellow);
+        PhysicsVolume = GetWorld()->GetDefaultPhysicsVolume(); // 기본 물리 볼륨 사용
+    }
+
+    if (!PhysicsVolume)
+    {
+        Debug::Print(TEXT("PhysSwimming Failed: No Valid Physics Volume Found!"), FColor::Red);
+        return;
+    }
+
+    if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity() && (Velocity.Z > 0.33f * MaxSwimSpeed) && (NetBuoyancy != 0.f))
+    {
+        Velocity.Z = FMath::Max<FVector::FReal>(0.33f * MaxSwimSpeed, Velocity.Z * Depth * Depth);
+    }
+    else if (Depth < 0.65f)
+    {
+        bLimitedUpAccel = (Acceleration.Z > 0.f);
+        Acceleration.Z = FMath::Min<FVector::FReal>(0.1f, Acceleration.Z);
+    }
+
+    Iterations++;
+    FVector OldLocation = UpdatedComponent->GetComponentLocation();
+    bJustTeleported = false;
+
+    /*if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+    {
+        const float Friction = 0.5f * PhysicsVolume->FluidFriction * Depth;  // 기존 `GetPhysicsVolume()` 대신 수정된 코드
+        CalcVelocity(deltaTime, Friction, true, GetMaxBrakingDeceleration());
+        Velocity.Z += GetGravityZ() * deltaTime * (1.f - NetBuoyancy);
+    }*/
+
+    ApplyRootMotionToVelocity(deltaTime);
+
+    FVector Adjusted = Velocity * deltaTime;
+    FHitResult Hit(1.f);
+    float remainingTime = deltaTime * Swim(Adjusted, Hit);
+
+    if (!IsSwimming())
+    {
+        StartNewPhysics(remainingTime, Iterations);
+        return;
+    }
+
+    if (Hit.Time < 1.f && CharacterOwner)
+    {
+        HandleSwimmingWallHit(Hit, deltaTime);
+        if (bLimitedUpAccel && (Velocity.Z >= 0.f))
+        {
+            Velocity.Z += OriginalAccelZ * deltaTime;
+            Adjusted = Velocity * (1.f - Hit.Time) * deltaTime;
+            Swim(Adjusted, Hit);
+            if (!IsSwimming())
+            {
+                StartNewPhysics(remainingTime, Iterations);
+                return;
+            }
+        }
+    }
+
+   /* if (!GetPhysicsVolume()->bWaterVolume && IsSwimming())
+    {
+        SetMovementMode(MOVE_Falling);
+    }*/
+
+    if (!IsSwimming())
+    {
+        StartNewPhysics(remainingTime, Iterations);
+    }
+}
+
+
+void UCustomMovementComponent::PhysFlying(float deltaTime, int32 Iterations)
+{
+          if (deltaTime < MIN_TICK_TIME)
+        {
+            return;
+        }
+
+        RestorePreAdditiveRootMotionVelocity();
+
+        if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+        {
+            if (bCheatFlying && Acceleration.IsZero())
+            {
+                Velocity = FVector::ZeroVector;
+            }
+            /*const float Friction = 0.5f * GetPhysicsVolume()->FluidFriction;*/
+            CalcVelocity(deltaTime, 0.f, true, GetMaxBrakingDeceleration());
+        }
+
+        ApplyRootMotionToVelocity(deltaTime);
+
+        Iterations++;
+        bJustTeleported = false;
+
+        FVector OldLocation = UpdatedComponent->GetComponentLocation();
+        const FVector Adjusted = Velocity * deltaTime;
+        FHitResult Hit(1.f);
+        SafeMoveUpdatedComponent(Adjusted, UpdatedComponent->GetComponentQuat(), true, Hit);
+
+        if (Hit.Time < 1.f)
+        {
+            const FVector GravDir = FVector(0.f, 0.f, -1.f);
+            const FVector VelDir = Velocity.GetSafeNormal();
+            const float UpDown = GravDir | VelDir;
+
+            bool bSteppedUp = false;
+            if ((FMath::Abs(Hit.ImpactNormal.Z) < 0.2f) && (UpDown < 0.5f) && (UpDown > -0.2f) && CanStepUp(Hit))
+            {
+                float stepZ = UpdatedComponent->GetComponentLocation().Z;
+                bSteppedUp = StepUp(GravDir, Adjusted * (1.f - Hit.Time), Hit);
+                if (bSteppedUp)
+                {
+                    OldLocation.Z = UpdatedComponent->GetComponentLocation().Z + (OldLocation.Z - stepZ);
+                }
+            }
+
+            if (!bSteppedUp)
+            {
+                //adjust and try again
+                HandleImpact(Hit, deltaTime, Adjusted);
+                SlideAlongSurface(Adjusted, (1.f - Hit.Time), Hit.Normal, Hit, true);
+            }
+        }
+
+        if (!bJustTeleported && !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+        {
+            Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
+        }
+    Super::PhysFlying(deltaTime, Iterations);
+}
+
+#pragma endregion
 
 
 #pragma region Climb Traces
@@ -204,6 +426,40 @@ void UCustomMovementComponent::StartClimbing()
 void UCustomMovementComponent::StopClimbing()
 {
 	SetMovementMode(MOVE_Falling);
+}
+
+void UCustomMovementComponent::PhysClimb(float deltaTime, int32 Iterations)
+{
+    if (deltaTime < MIN_TICK_TIME)
+    {
+        return;
+    }
+
+    RestorePreAdditiveRootMotionVelocity();
+
+    if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+    {
+        CalcVelocity(deltaTime, 0.f, true, MaxBreakClimbDeceleration);
+    }
+
+    ApplyRootMotionToVelocity(deltaTime);
+
+    FVector OldLocation = UpdatedComponent->GetComponentLocation();
+    const FVector Adjusted = Velocity * deltaTime;
+    FHitResult Hit(1.f);
+    SafeMoveUpdatedComponent(Adjusted, UpdatedComponent->GetComponentQuat(), true, Hit);
+
+    if (Hit.Time < 1.f)
+    {
+        //adjust and try again
+        HandleImpact(Hit, deltaTime, Adjusted);
+        SlideAlongSurface(Adjusted, (1.f - Hit.Time), Hit.Normal, Hit, true);   
+    }
+
+    if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+    {
+        Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
+    }
 }
 
 bool UCustomMovementComponent::IsClimbing() const
