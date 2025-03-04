@@ -21,6 +21,15 @@ void UCustomMovementComponent::SetUpdatedComponent(USceneComponent* NewUpdatedCo
     if (!CharacterOwner)
     {
         UE_LOG(LogTemp, Error, TEXT("CharacterOwner is NULL in CustomMovementComponent!"));
+		return;
+    }
+
+    // 캡슐 컴포넌트에 오버랩 이벤트 추가
+    UCapsuleComponent* CapsuleComp = CharacterOwner->GetCapsuleComponent();
+    if (CapsuleComp)
+    {
+        CapsuleComp->OnComponentBeginOverlap.AddDynamic(this, &UCustomMovementComponent::OnBeginOverlap);
+        CapsuleComp->OnComponentEndOverlap.AddDynamic(this, &UCustomMovementComponent::OnEndOverlap);
     }
 }
 
@@ -57,8 +66,8 @@ void UCustomMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovem
 
     if (PreviousMovementMode == MOVE_Custom && PreviousCustomMode == ECustomMovementMode::MOVE_Swimming)
     {
-        bOrientRotationToMovement = true;
-        CharacterOwner->GetCapsuleComponent()->SetCapsuleHalfHeight(96.f);
+       bOrientRotationToMovement = true;
+       CharacterOwner->GetCapsuleComponent()->SetCapsuleHalfHeight(96.f);
 
         StopMovementImmediately();
     }
@@ -231,16 +240,70 @@ FHitResult UCustomMovementComponent::TraceFromEyeHeight(float TraceDistance, flo
 
 #pragma region Swim Traces
 
+void UCustomMovementComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+    bool bFromSweep, const FHitResult& SweepResult)
+{
+    if (OtherComp && OtherComp->GetCollisionObjectType() == ECC_GameTraceChannel1)  // ECC_Water 충돌 감지
+    {
+        //Debug::Print(TEXT("Entered Water - Attempting to Enter Swim Mode"), FColor::Blue);
+
+        if (!IsSwimming() && !bHasEnteredWater)
+        {
+            bHasEnteredWater = true;  // 물에 들어갔다는 플래그 설정
+            GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UCustomMovementComponent::StartSwimming);
+        }
+    }
+}
+
+
+void UCustomMovementComponent::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+    if (OtherComp && OtherComp->GetCollisionObjectType() == ECC_GameTraceChannel1)  // ECC_Water 충돌 감지
+    {
+       // Debug::Print(TEXT("Exited Water - Attempting to Exit Swim Mode"), FColor::Yellow);
+
+        if (IsSwimming())
+        {
+            StopSwimming();
+        }
+
+        bHasEnteredWater = false;  // 물에서 나오면 다시 수영 가능하도록 초기화
+    }
+}
+
+
 bool UCustomMovementComponent::TraceSwimmableSurfaces()
 {
-    const FVector StartOffset = FVector(0.f, 0.f, -30.f); // 약간 아래로 탐색
-    const FVector Start = UpdatedComponent->GetComponentLocation() + StartOffset;
-    const FVector End = Start - FVector(0.f, 0.f, 50.f); // 아래 방향으로 탐색
+    const FVector Start = UpdatedComponent->GetComponentLocation();
+    const FVector End = Start - FVector(0.f, 0.f, 150.f);  // 기존보다 깊이 감지
 
-    SwimmableSurfacesTracedResults = DoCapsuleTraceMultiByObject(Start, End, true, true);
+    FHitResult HitResult;
+    FCollisionQueryParams QueryParams;
+    QueryParams.AddIgnoredActor(CharacterOwner);  // 캐릭터 자신을 제외
 
-    return !SwimmableSurfacesTracedResults.IsEmpty();
+    bool bHit = GetWorld()->SweepSingleByObjectType(
+        HitResult,
+        Start,
+        End,
+        FQuat::Identity,
+        FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel1),  // ECC_Water 채널 감지
+        FCollisionShape::MakeCapsule(50.f, 75.f),  // 캡슐 모양으로 감지 (반지름 50, 높이 75)
+        QueryParams
+    );
+
+    if (bHit)
+    {
+        Debug::Print(TEXT("Water Surface Detected - Entering Swim Mode"), FColor::Blue);
+        return true;
+    }
+
+    Debug::Print(TEXT("No Water Detected"), FColor::Red);
+    return false;
 }
+
+
 
 FHitResult UCustomMovementComponent::TraceWaterSurface(float TraceDistance, float TraceStartOffset)
 {
@@ -260,49 +323,85 @@ FHitResult UCustomMovementComponent::TraceWaterSurface(float TraceDistance, floa
    
 void UCustomMovementComponent::ToggleSwimming(bool bEnableSwim)
 {
-    if (!CharacterOwner) return;
+    if (!CharacterOwner)
+    {
+        Debug::Print(TEXT("ToggleSwimming Failed: CharacterOwner is NULL"), FColor::Red);
+        return;
+    }
 
     if (bEnableSwim)
     {
         if (CanStartSwimming())
         {
-            Debug::Print(TEXT("Swim Mode Activated"));
+            Debug::Print(TEXT("Swim Mode Activated"), FColor::Green);
             StartSwimming();
         }
         else
         {
-            Debug::Print(TEXT("Swim Mode Failed"));
+            Debug::Print(TEXT("Swim Mode Activation Failed"), FColor::Red);
         }
     }
     else
     {
+        Debug::Print(TEXT("Swim Mode Deactivated"), FColor::Yellow);
         StopSwimming();
     }
 }
 
+
 bool UCustomMovementComponent::CanStartSwimming()
 {
-    if (IsFalling()) return false;
-    if (!TraceSwimmableSurfaces()) return false;
-    if (!TraceWaterSurface(100.f).bBlockingHit) return false;
+    if (!CharacterOwner)
+    {
+        Debug::Print(TEXT("Swimming Check Failed: CharacterOwner is NULL"), FColor::Red);
+        return false;
+    }
 
+    if (IsFalling())
+    {
+        Debug::Print(TEXT("Swimming Check Failed: Character is Falling"), FColor::Red);
+        return false;
+    }
+
+    if (!TraceSwimmableSurfaces())
+    {
+        Debug::Print(TEXT("Swimming Check Failed: No Water Surface Detected"), FColor::Red);
+        return false;
+    }
+
+    Debug::Print(TEXT("Swimming Check Passed: Entering Swim Mode"), FColor::Green);
     return true;
 }
 
 void UCustomMovementComponent::StartSwimming()
 {
+    if (!CharacterOwner)
+    {
+        Debug::Print(TEXT("StartSwimming Failed: CharacterOwner is NULL"), FColor::Red);
+        return;
+    }
+
+    if (IsSwimming())
+    {
+        Debug::Print(TEXT("Already in Swim Mode"), FColor::Red);
+        return;
+    }
+
+    Debug::Print(TEXT("Swim Mode Activated"), FColor::Green);
     SetMovementMode(MOVE_Custom, ECustomMovementMode::MOVE_Swimming);
 }
 
+
 void UCustomMovementComponent::StopSwimming()
 {
-    SetMovementMode(MOVE_Walking);
+	SetMovementMode(MOVE_Walking);
 }
 
 bool UCustomMovementComponent::IsSwimming() const
 {
-    return MovementMode == MOVE_Custom && CustomMovementMode == ECustomMovementMode::MOVE_Swimming;
+	return MovementMode == MOVE_Custom && CustomMovementMode == ECustomMovementMode::MOVE_Swimming;
 }
+
 
 #pragma endregion
 

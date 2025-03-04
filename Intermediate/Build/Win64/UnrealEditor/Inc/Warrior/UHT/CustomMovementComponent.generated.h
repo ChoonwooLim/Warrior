@@ -9,6 +9,9 @@
 #include "UObject/ScriptMacros.h"
 
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
+class AActor;
+class UPrimitiveComponent;
+struct FHitResult;
 #ifdef WARRIOR_CustomMovementComponent_generated_h
 #error "CustomMovementComponent.generated.h already included, missing '#pragma once' in CustomMovementComponent.h"
 #endif
@@ -22,7 +25,9 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 	DECLARE_FUNCTION(execCheckObstacleAhead); \
 	DECLARE_FUNCTION(execIsGroundBelow); \
 	DECLARE_FUNCTION(execIsCeilingAbove); \
-	DECLARE_FUNCTION(execCheckFlightCondition);
+	DECLARE_FUNCTION(execCheckFlightCondition); \
+	DECLARE_FUNCTION(execOnEndOverlap); \
+	DECLARE_FUNCTION(execOnBeginOverlap);
 
 
 #define FID_02_Warrior_Source_Warrior_Public_Components_CustomMovementComponent_h_30_ACCESSORS

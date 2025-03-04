@@ -128,12 +128,25 @@ public:
 
 #pragma region Swim Core
 
+    UFUNCTION()
+    void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+        bool bFromSweep, const FHitResult& SweepResult);
+
+    UFUNCTION()
+    void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+
 public:
     void ToggleSwimming(bool bEnableSwim);
     bool CanStartSwimming();
     void StartSwimming();
     void StopSwimming();
     bool IsSwimming() const;
+
+    private:
+		bool bHasEnteredWater = false; // 물에 들어갔는지 여부를 저장하는 변수.
 
    
 #pragma endregion
