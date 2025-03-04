@@ -41,6 +41,9 @@ protected:
     virtual void PhysSwimming(float deltaTime, int32 Iterations);
     virtual void PhysFlying(float deltaTime, int32 Iterations);
 
+    virtual float GetMaxSpeed() const override;
+    virtual float GetMaxAcceleration() const override;
+
 #pragma endregion
 
     
@@ -86,6 +89,9 @@ private:
 
     void ProcessClimbableSurfaceInfo();
 
+    FQuat GetClimbRotation(float DeltaTime);
+
+    void SnapMovementToClimbableSurfaces(float DeltaTime);
 
 #pragma endregion
 
@@ -124,6 +130,12 @@ private:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Climbing", meta = (AllowPrivateAccess = "true"))
     float MaxBreakClimbDeceleration = 400.f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Climbing", meta = (AllowPrivateAccess = "true"))
+    float MaxClimbSpeed = 100.f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Climbing", meta = (AllowPrivateAccess = "true"))
+    float MaxClimbAcceleration= 300.f;
 
 
 #pragma endregion
@@ -165,7 +177,7 @@ public:
     bool CanStartSwimming();
     void StartSwimming();
     void StopSwimming();
-    bool IsSwimming() const;
+    bool IsSwimming() const override;
 
     private:
 		bool bHasEnteredWater = false; // 물에 들어갔는지 여부를 저장하는 변수.
@@ -179,6 +191,15 @@ private:
 	TArray<FHitResult> SwimmableSurfacesTracedResults;
 
 #pragma endregion
+
+#pragma region fly Core
+
+    public:
+        bool IsFlying() const override;
+
+
+#pragma endregion
+
 
 #pragma region Flight Traces
 
@@ -197,6 +218,7 @@ public:
     bool CheckObstacleAhead();
 
 #pragma endregion
+
 
 #pragma region Flight Variables
 
