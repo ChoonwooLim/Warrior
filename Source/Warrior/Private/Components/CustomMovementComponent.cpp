@@ -435,10 +435,19 @@ void UCustomMovementComponent::PhysClimb(float deltaTime, int32 Iterations)
         return;
     }
 
+    /* Process all the climbable surfaces info */
+    TraceClimbableSurfaces();
+
+    ProcessClimbableSurfaceInfo();
+
+
+    /* Check if we should stop climbing */
+
     RestorePreAdditiveRootMotionVelocity();
 
     if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
     {
+        //Define the max climb speed and acceleration
         CalcVelocity(deltaTime, 0.f, true, MaxBreakClimbDeceleration);
     }
 
@@ -447,6 +456,8 @@ void UCustomMovementComponent::PhysClimb(float deltaTime, int32 Iterations)
     FVector OldLocation = UpdatedComponent->GetComponentLocation();
     const FVector Adjusted = Velocity * deltaTime;
     FHitResult Hit(1.f);
+
+    //Handle climb rotation
     SafeMoveUpdatedComponent(Adjusted, UpdatedComponent->GetComponentQuat(), true, Hit);
 
     if (Hit.Time < 1.f)
@@ -460,6 +471,28 @@ void UCustomMovementComponent::PhysClimb(float deltaTime, int32 Iterations)
     {
         Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
     }
+
+    /* Snap movement to climbable surfaces*/
+
+}
+
+void UCustomMovementComponent::ProcessClimbableSurfaceInfo()
+{
+    CurrentClimbableSurfaceLocation = FVector::ZeroVector;
+    CurrentClimbableSurfaceNormal = FVector::ZeroVector;
+
+    if (ClimbableSurfacesTracedResults.IsEmpty()) return;
+    for (const FHitResult& TracedHitResult : ClimbableSurfacesTracedResults)
+    {
+        CurrentClimbableSurfaceLocation += TracedHitResult.ImpactPoint;
+        CurrentClimbableSurfaceNormal += TracedHitResult.ImpactNormal;
+    }
+
+    CurrentClimbableSurfaceLocation /= ClimbableSurfacesTracedResults.Num();
+    CurrentClimbableSurfaceNormal = CurrentClimbableSurfaceNormal.GetSafeNormal();
+
+    Debug::Print(TEXT("CurrentClimbableSurfaceLocation:") + CurrentClimbableSurfaceLocation.ToCompactString(), FColor::Cyan, 1);
+    Debug::Print(TEXT("CurrentClimbableSurfaceNormal:") + CurrentClimbableSurfaceNormal.ToCompactString(), FColor::Red, 2);
 }
 
 bool UCustomMovementComponent::IsClimbing() const
@@ -475,7 +508,7 @@ bool UCustomMovementComponent::TraceClimbableSurfaces()
     const FVector Start = UpdatedComponent->GetComponentLocation() + StartOffset;
     const FVector End = Start + UpdatedComponent->GetForwardVector();
 
-    ClimbableSurfacesTracedResults = DoCapsuleTraceMultiByObject(Start, End, true,true);
+    ClimbableSurfacesTracedResults = DoCapsuleTraceMultiByObject(Start, End, true);
 
 	return !ClimbableSurfacesTracedResults.IsEmpty();
 
@@ -489,7 +522,7 @@ FHitResult UCustomMovementComponent::TraceFromEyeHeight(float TraceDistance, flo
     const FVector Start = ComponentLocation + EyeHeightOffset;
     const FVector End = Start + UpdatedComponent->GetForwardVector() * TraceDistance;
 
-    return DoLineTraceSingleByObject(Start, End, true,true);
+    return DoLineTraceSingleByObject(Start, End);
 }
 
 #pragma endregion
