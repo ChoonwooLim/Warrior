@@ -158,8 +158,31 @@ void AWarriorCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 void AWarriorCharacter::Move(const FInputActionValue& Value)
 {
+	if (!CustomMovementComponent) return;
+	
+	if (CustomMovementComponent->IsClimbing())
+	{
+		HandleClimbMovementInput(Value);
+	}
+	else if (CustomMovementComponent->IsSwimming())
+	{
+		HandleSwimMovementInput(Value);
+	}
+	else if (CustomMovementComponent->IsFlying())
+	{
+		HandleFlyMovementInput(Value);
+	}
+	else
+	{
+		HandleGroundMovementInput(Value);
+	}
+	
+}
+
+void AWarriorCharacter::HandleGroundMovementInput(const FInputActionValue& Value)
+{
 	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	const FVector2D MovementVector = Value.Get<FVector2D>();
 
 	if (Controller != nullptr)
 	{
@@ -169,7 +192,7 @@ void AWarriorCharacter::Move(const FInputActionValue& Value)
 
 		// get forward vector
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	
+
 		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
@@ -177,6 +200,31 @@ void AWarriorCharacter::Move(const FInputActionValue& Value)
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
 	}
+}
+
+void AWarriorCharacter::HandleClimbMovementInput(const FInputActionValue& Value)
+{
+	// input is a Vector2D
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+
+	const FVector ForwardDirection = FVector::CrossProduct(-CustomMovementComponent->GetClimbableSurfaceNormal(), GetActorRightVector());
+
+	const FVector RightDirection = FVector::CrossProduct(-CustomMovementComponent->GetClimbableSurfaceNormal(), -GetActorUpVector());
+
+	// add movement 
+	AddMovementInput(ForwardDirection, MovementVector.Y);
+	AddMovementInput(RightDirection, MovementVector.X);
+
+}
+
+void AWarriorCharacter::HandleSwimMovementInput(const FInputActionValue& Value)
+{
+
+}
+
+void AWarriorCharacter::HandleFlyMovementInput(const FInputActionValue& Value)
+{
+
 }
 
 void AWarriorCharacter::Look(const FInputActionValue& Value)
@@ -224,6 +272,7 @@ void AWarriorCharacter::OnSwimActionStarted(const FInputActionValue& Value)
 	}
 	
 }
+
 
 //////////////////////////////////////////////////////////////////////////
 

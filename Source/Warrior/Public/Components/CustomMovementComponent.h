@@ -150,12 +150,15 @@ public:
 			  bEnableClimb이 false이면 캐릭터가 벽을 탈 수 없는 상태로 전환되어 벽을 탈 수 없게 됨.*/
     bool IsClimbing() const;
 
+    FORCEINLINE FVector GetClimbableSurfaceNormal() const { return CurrentClimbableSurfaceNormal; }
+
 
 #pragma region Swim Traces
 
 public:
     bool TraceSwimmableSurfaces();
     FHitResult TraceWaterSurface(float TraceDistance, float TraceStartOffset = 0.f);
+
     
 
 #pragma endregion

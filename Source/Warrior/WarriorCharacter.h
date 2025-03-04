@@ -50,6 +50,16 @@ private:
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
+	/** Called for movement input */
+	void HandleGroundMovementInput(const FInputActionValue& Value);
+
+	void HandleClimbMovementInput(const FInputActionValue& Value);
+
+	void HandleSwimMovementInput(const FInputActionValue& Value);
+
+	void HandleFlyMovementInput(const FInputActionValue& Value);
+
+
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
@@ -71,15 +81,12 @@ private:
 	UInputAction* SwimAction;
 
 	void OnSwimActionStarted(const FInputActionValue& Value); //Swim입력이 감지되면 실행될 함수로 SetupPlayerInputComponent()에서 바인딩.
-
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* FlyAction;
 
 	void OnFlyActionStarted(const FInputActionValue& Value); //Fly입력이 감지되면 실행될 함수로 SetupPlayerInputComponent()에서 바인딩.
-
-
-
+	
 	void OnJumpActionStarted(const FInputActionValue& Value);
 
 	void StartFlying();

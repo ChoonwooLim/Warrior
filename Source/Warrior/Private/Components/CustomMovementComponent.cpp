@@ -61,6 +61,10 @@ void UCustomMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovem
         bOrientRotationToMovement = true;
         CharacterOwner->GetCapsuleComponent()->SetCapsuleHalfHeight(96.f);
 
+        const FRotator DirtyRotation = UpdatedComponent->GetComponentRotation();
+        const FRotator CleanStandRotation = FRotator(0.f, DirtyRotation.Yaw, 0.f);
+        UpdatedComponent->SetRelativeRotation(CleanStandRotation);
+
 		StopMovementImmediately();
     }
 
@@ -508,6 +512,8 @@ void UCustomMovementComponent::SnapMovementToClimbableSurfaces(float DeltaTime)
         UpdatedComponent->GetComponentQuat(),
         true);
 }
+
+
 
 bool UCustomMovementComponent::IsClimbing() const
 {
