@@ -29,8 +29,6 @@ class WARRIOR_API UCustomMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
 
-
-
 #pragma region OverridenFunctions
 
 protected:
@@ -88,6 +86,8 @@ private:
     void PhysClimb(float deltaTime, int32 Iterations);
 
     void ProcessClimbableSurfaceInfo();
+
+    bool GetShouldStopClimbing();
 
     FQuat GetClimbRotation(float DeltaTime);
 
