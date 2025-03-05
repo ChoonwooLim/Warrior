@@ -157,7 +157,7 @@ public:
 
 public:
     bool TraceSwimmableSurfaces();
-    FHitResult TraceWaterSurface(float TraceDistance, float TraceStartOffset = 0.f);
+    FHitResult TraceWaterSurface(float TraceDistance);
 
     
 

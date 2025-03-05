@@ -122,10 +122,9 @@ float UCustomMovementComponent::GetMaxAcceleration() const
     }
 }
 
-
 void UCustomMovementComponent::PhysSwimming(float deltaTime, int32 Iterations)
 {
-      if (!CharacterOwner)
+    if (!CharacterOwner)
     {
         Debug::Print(TEXT("PhysSwimming Failed: CharacterOwner is NULL"), FColor::Red);
         return;
@@ -181,28 +180,17 @@ void UCustomMovementComponent::PhysSwimming(float deltaTime, int32 Iterations)
         return;
     }
 
-    if (Hit.Time < 1.f && CharacterOwner)
+    // 바닥 감지를 추가하여 너무 얕은 곳에서는 수영 모드를 해제
+    if (TraceSwimmableSurfaces() && !IsGroundBelow())
     {
-        HandleSwimmingWallHit(Hit, deltaTime);
-        if (bLimitedUpAccel && (Velocity.Z >= 0.f))
-        {
-            Velocity.Z += OriginalAccelZ * deltaTime;
-            Adjusted = Velocity * (1.f - Hit.Time) * deltaTime;
-            Swim(Adjusted, Hit);
-            if (!IsSwimming())
-            {
-                StartNewPhysics(remainingTime, Iterations);
-                return;
-            }
-        }
+        Debug::Print(TEXT("Swimming Mode Maintained"), FColor::Cyan);
     }
-
-    if (IsSwimming() && !TraceSwimmableSurfaces())
+    else
     {
-        SetMovementMode(MOVE_Falling);
+        Debug::Print(TEXT("Too Shallow - Exiting Swim Mode"), FColor::Red);
+        SetMovementMode(MOVE_Walking);
     }
 }
-
 
 void UCustomMovementComponent::PhysFlying(float deltaTime, int32 Iterations)
 {
@@ -553,41 +541,75 @@ void UCustomMovementComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedCom
 {
     if (!OtherComp || !CharacterOwner) return;
 
-    // 충돌한 오브젝트가 물인지 확인
-    if (OtherComp->GetCollisionObjectType() == ECC_GameTraceChannel1)
-    {
-        // 캐릭터의 현재 위치
-        FVector CharacterLocation = CharacterOwner->GetActorLocation();
+    Debug::Print(TEXT("OnBeginOverlap Triggered"), FColor::Yellow);
 
-        // 캐릭터의 가슴 높이 (BaseEyeHeight보다 조금 낮게 설정)
-        float ChestHeightOffset = CharacterOwner->BaseEyeHeight * 0.6f;
+    if (OtherComp->GetCollisionObjectType() == ECC_GameTraceChannel1)  // ECC_Water 충돌 감지
+    {
+        Debug::Print(TEXT("Water Overlap Detected"), FColor::Blue);
+
+        FVector CharacterLocation = CharacterOwner->GetActorLocation();
+        float CapsuleHalfHeight = CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+        // 가슴 높이 위치 (기존보다 낮게 설정)
+        float ChestHeightOffset = CapsuleHalfHeight * 0.3f;  // 기존 0.4f → 0.3f로 수정
         FVector ChestLocation = CharacterLocation + FVector(0.f, 0.f, ChestHeightOffset);
 
-        // 가슴 높이보다 물이 높은지 확인
-        if (SweepResult.ImpactPoint.Z >= ChestLocation.Z)
+        // 물 표면 감지
+        FHitResult WaterHit = TraceWaterSurface(300.f);
+
+        if (WaterHit.bBlockingHit)
         {
-            if (!IsSwimming())
+            float WaterSurfaceZ = WaterHit.ImpactPoint.Z;
+
+            Debug::Print(FString::Printf(TEXT("Updated WaterSurfaceZ: %f, ChestLocationZ: %f"), WaterSurfaceZ, ChestLocation.Z), FColor::Cyan);
+
+            // 물 표면이 가슴 높이보다 약간 낮아도 수영 모드 활성화 가능하도록 수정
+            if (WaterSurfaceZ >= ChestLocation.Z - 5.0f)  // 기존보다 5cm 유연하게 적용
             {
-                Debug::Print(TEXT("Entered Water - Activating Swim Mode"), FColor::Blue);
-                StartSwimming();
+                Debug::Print(TEXT("Water Level High Enough - Activating Swim Mode"), FColor::Green);
+                ToggleSwimming(true);
             }
+            else
+            {
+                Debug::Print(TEXT("Water Too Low - Not Activating Swim Mode"), FColor::Red);
+            }
+        }
+        else
+        {
+            Debug::Print(TEXT("Water Surface Not Found"), FColor::Red);
         }
     }
 }
 
 
 
+
+
+
 void UCustomMovementComponent::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-    if (!OtherComp) return;
+    if (!OtherComp || !CharacterOwner) return;
 
     if (OtherComp->GetCollisionObjectType() == ECC_GameTraceChannel1)  // ECC_Water 충돌 감지
     {
-        if (IsSwimming() && !TraceSwimmableSurfaces())
+        FVector CharacterLocation = CharacterOwner->GetActorLocation();
+        float CapsuleHalfHeight = CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+        // 캐릭터의 발 위치를 기준으로 물 표면 감지
+        FVector FootLocation = CharacterLocation - FVector(0.f, 0.f, CapsuleHalfHeight);
+
+        FHitResult WaterHit = TraceWaterSurface(300.f);
+
+        // 만약 캐릭터의 발보다 물 표면이 낮다면, 물에서 완전히 나온 것으로 판단
+        if (!WaterHit.bBlockingHit || WaterHit.ImpactPoint.Z < FootLocation.Z)
         {
             Debug::Print(TEXT("Exited Water - Deactivating Swim Mode"), FColor::Yellow);
-            StopSwimming();
+            ToggleSwimming(false);  // ✅ 직접 StopSwimming() 호출 대신 Toggle 사용
+        }
+        else
+        {
+            Debug::Print(TEXT("Still in Water - Keeping Swim Mode"), FColor::Green);
         }
     }
 }
@@ -622,18 +644,43 @@ bool UCustomMovementComponent::TraceSwimmableSurfaces()
     return false;
 }
 
-
-
-FHitResult UCustomMovementComponent::TraceWaterSurface(float TraceDistance, float TraceStartOffset)
+FHitResult UCustomMovementComponent::TraceWaterSurface(float TraceDistance)
 {
-    const FVector ComponentLocation = UpdatedComponent->GetComponentLocation();
-    const FVector EyeHeightOffset = FVector(0.f, 0.f, CharacterOwner->BaseEyeHeight + TraceStartOffset);
+    if (!CharacterOwner) return FHitResult();
 
-    const FVector Start = ComponentLocation + EyeHeightOffset;
-    const FVector End = Start - FVector(0.f, 0.f, TraceDistance);
+    // 캐릭터의 머리 위에서부터 물 표면을 감지하도록 시작 위치를 상향 조정
+    FVector Start = CharacterOwner->GetActorLocation() + FVector(0.f, 0.f, TraceDistance * 2.0f);
+    FVector End = CharacterOwner->GetActorLocation() - FVector(0.f, 0.f, TraceDistance * 2);
 
-    return DoLineTraceSingleByObject(Start, End, true, true);
+    FHitResult HitResult;
+    FCollisionQueryParams QueryParams;
+    QueryParams.AddIgnoredActor(CharacterOwner);
+
+    bool bHit = GetWorld()->LineTraceSingleByChannel(
+        HitResult,
+        Start,
+        End,
+        ECC_Visibility, // 충돌 채널 변경 가능
+        QueryParams
+    );
+
+    if (bHit)
+    {
+        DrawDebugLine(GetWorld(), Start, HitResult.ImpactPoint, FColor::Blue, false, 2.0f, 0, 2.0f);
+        Debug::Print(FString::Printf(TEXT("Updated TraceWaterSurface Hit: %f"), HitResult.ImpactPoint.Z), FColor::Green);
+    }
+    else
+    {
+        DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f, 0, 2.0f);
+        Debug::Print(TEXT("Updated TraceWaterSurface Failed - No Hit"), FColor::Red);
+    }
+
+    return HitResult;
 }
+
+
+
+
 
 
 #pragma endregion
@@ -642,22 +689,35 @@ FHitResult UCustomMovementComponent::TraceWaterSurface(float TraceDistance, floa
    
 void UCustomMovementComponent::ToggleSwimming(bool bEnableSwim)
 {
-    if (!CharacterOwner) return;
+    if (!CharacterOwner)
+    {
+        Debug::Print(TEXT("ToggleSwimming Failed: CharacterOwner is NULL"), FColor::Red);
+        return;
+    }
 
     if (bEnableSwim)
     {
+        Debug::Print(TEXT("ToggleSwimming(true) called"), FColor::Yellow);
+
         if (CanStartSwimming())
         {
             Debug::Print(TEXT("Swim Mode Activated"), FColor::Green);
             StartSwimming();
         }
+        else
+        {
+            Debug::Print(TEXT("Swim Mode Activation Failed: CanStartSwimming() returned false"), FColor::Red);
+        }
     }
     else
     {
+        Debug::Print(TEXT("ToggleSwimming(false) called"), FColor::Yellow);
         Debug::Print(TEXT("Swim Mode Deactivated"), FColor::Yellow);
         StopSwimming();
     }
 }
+
+
 
 bool UCustomMovementComponent::CanStartSwimming()
 {
