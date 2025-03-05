@@ -868,7 +868,29 @@ bool UCustomMovementComponent::CheckObstacleAhead()
 
 bool UCustomMovementComponent::IsFlying() const
 {
-    return false;
+    return MovementMode == MOVE_Custom && CustomMovementMode == ECustomMovementMode::MOVE_Flying;
+}
+
+void UCustomMovementComponent::StartFlying()
+{
+    if (!CharacterOwner) return;
+
+    if (CheckFlightCondition() && !IsFlying())
+    {
+        Debug::Print(TEXT("Fly Mode Activated"), FColor::Cyan);
+        SetMovementMode(MOVE_Custom, ECustomMovementMode::MOVE_Flying);
+    }
+}
+
+void UCustomMovementComponent::StopFlying()
+{
+    if (!CharacterOwner) return;
+
+    if (IsFlying())
+    {
+        Debug::Print(TEXT("Fly Mode Deactivated"), FColor::Yellow);
+        SetMovementMode(MOVE_Falling);
+    }
 }
 
 #pragma endregion

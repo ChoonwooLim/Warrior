@@ -219,11 +219,49 @@ void AWarriorCharacter::HandleClimbMovementInput(const FInputActionValue& Value)
 
 void AWarriorCharacter::HandleSwimMovementInput(const FInputActionValue& Value)
 {
+	// input is a Vector2D
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		// find out which way is forward
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		// get right vector 
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// add movement 
+		AddMovementInput(ForwardDirection, MovementVector.Y);
+		AddMovementInput(RightDirection, MovementVector.X);
+	}
 
 }
 
 void AWarriorCharacter::HandleFlyMovementInput(const FInputActionValue& Value)
 {
+	// input is a Vector2D
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		// find out which way is forward
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		// get right vector 
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// add movement 
+		AddMovementInput(ForwardDirection, MovementVector.Y);
+		AddMovementInput(RightDirection, MovementVector.X);
+	}
 
 }
 
@@ -278,31 +316,18 @@ void AWarriorCharacter::OnSwimActionStarted(const FInputActionValue& Value)
 
 void AWarriorCharacter::OnFlyActionStarted(const FInputActionValue& Value)
 {
-	static double LastTapTime = 0.0;
-	double CurrentTime = GetWorld()->GetTimeSeconds();
-
-	// CustomMovementComponent가 없으면 실행하지 않음
 	if (!CustomMovementComponent) return;
 
-	// 현재 이동 모드 확인
-	if (CustomMovementComponent->IsFlying())  // 비행 중이라면
+	if (CustomMovementComponent->IsFlying())
 	{
-		// 한 번만 눌러도 비행 모드 종료
-		CustomMovementComponent->SetMovementMode(MOVE_Walking);
-		Debug::Print(TEXT("Fly Mode Deactivated"));
-		return;  // 여기서 함수 종료 (더블탭 체크 안 함)
+		CustomMovementComponent->StopFlying();
 	}
-
-	// 더블탭 감지 (0.3초 이내로 두 번 눌렀을 때만 비행 시작)
-	if (CurrentTime - LastTapTime < 0.3)
+	else
 	{
-		CustomMovementComponent->SetMovementMode(MOVE_Flying);
-		Debug::Print(TEXT("Fly Mode Activated"));
+		CustomMovementComponent->StartFlying();
 	}
-
-	// 마지막 입력 시간 업데이트
-	LastTapTime = CurrentTime;
 }
+
 
 void AWarriorCharacter::OnJumpActionStarted(const FInputActionValue& Value)
 {

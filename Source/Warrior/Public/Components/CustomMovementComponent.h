@@ -195,16 +195,10 @@ private:
 
 #pragma endregion
 
-#pragma region fly Core
-
-    public:
-        bool IsFlying() const override;
 
 
-#pragma endregion
 
-
-#pragma region Flight Traces
+#pragma region Fly Traces
 
 public:
 
@@ -222,8 +216,19 @@ public:
 
 #pragma endregion
 
+#pragma region Fly Core
 
-#pragma region Flight Variables
+    public:
+        bool IsFlying() const override;
+
+        void StartFlying();
+
+        void StopFlying();
+
+
+#pragma endregion
+
+#pragma region Fly Variables
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Flying", meta = (AllowPrivateAccess = "true"))
     float FlightTraceDistance = 500.f;  // 비행 가능 여부를 체크할 거리
